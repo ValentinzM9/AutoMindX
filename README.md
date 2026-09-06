@@ -1,4 +1,6 @@
-# AutoMindX – Simulador Visual de Autómatas Finitos
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=32&duration=3000&pause=500&color=FF0000&center=true&vCenter=true&width=800&lines=AutoMindX;Simulador+de+Aut%C3%B3matas+Finitos)](https://git.io/typing-svg)
+
+<br>
 
 [![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk)](#)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap)](#)
@@ -14,18 +16,18 @@
 
 ---
 
-## 🧬 Idea del proyecto
+## Idea del proyecto
 
 **AutoMindX** es una aplicación que permite **diseñar, visualizar y simular autómatas finitos deterministas (DFA)** de manera interactiva.  
 El usuario puede **dibujar el grafo** directamente en un lienzo, definir el alfabeto, ingresar una cadena y **observar paso a paso el proceso de validación con colores dinámicos**, resaltando el estado inicial, la trayectoria recorrida y el resultado final (aceptada o rechazada).
 
-La interfaz de usuario (vista) está construida con **HTML, CSS y Bootstrap 5**, lo que proporciona un diseño moderno, responsivo y fácil de mantener. La lógica del autómata y la validación de cadenas están implementadas en **Java**, separadas claramente siguiendo el patrón **Modelo-Vista-Controlador (MVC)**.
+La interfaz de usuario (vista) está construida con **HTML, CSS y Bootstrap 5**, que adapta el aplicativo al dispositivo del usuario. La lógica del autómata y la validación de cadenas están implementadas en **Java**, separadas claramente siguiendo el patrón **Modelo-Vista-Controlador (MVC)**.
 
-El dibujo del grafo se realiza sobre un lienzo (canvas) que utiliza **Java2D** para la representación gráfica, evitando dependencias externas para el pintado.
+El dibujo del grafo se realiza sobre un lienzo que utiliza **Java2D** para la representación gráfica, evitando dependencias externas para el pintado.
 
 ---
 
-## ✨ Características principales
+## Características principales
 
 | Característica | Descripción |
 |:---|:---|
@@ -38,31 +40,24 @@ El dibujo del grafo se realiza sobre un lienzo (canvas) que utiliza **Java2D** p
 | **Estado inicial identificado** | El estado inicial se marca visualmente (por ejemplo, con una flecha entrante o color especial). |
 | **Aceptación o rechazo visual** | Al finalizar, el autómata indica claramente si la cadena fue aceptada o rechazada, con colores representativos. |
 | **Exportar/Importar** | Guarda y carga autómatas en formato JSON (opcional). |
-| **Cero dependencias externas para dibujo** | Solo Java estándar para el motor gráfico, sin bibliotecas adicionales. |
+| **dependencias externas para dibujo** | Solo Java estándar para el motor gráfico, sin bibliotecas adicionales. |
 
 ---
 
-## 🎨 Visualización del proceso de validación
+## Visualización del proceso de validación
 
 AutoMindX no se limita a un simple "sí/no": ofrece una **experiencia visual interactiva** que muestra:
 
 - **Estado inicial**: señalado con un borde especial o una flecha entrante.
-- **Recorrido animado**: a medida que se consume cada símbolo de la cadena, el estado actual se resalta y la transición utilizada se ilumina en un color (por ejemplo, verde para avance, rojo para rechazo).
+- **Recorrido animado**: a medida que se consume cada símbolo de la cadena, el estado actual se resalta y la transición utilizada se ilumina.
 - **Trayectoria completa**: al finalizar, la ruta completa queda resaltada, permitiendo ver exactamente cómo se llegó al resultado.
 - **Resultado final**:
-  - **Aceptada**: el último estado pertenece al conjunto de aceptación; se muestra en verde.
-  - **Rechazada**: la cadena no puede completarse o termina en un estado no aceptador; se muestra en rojo.
-
-*Ejemplo de colores usados:*
-- **Estado actual** → amarillo
-- **Transición recorrida** → verde
-- **Trayectoria final** → azul
-- **Estado de aceptación** → verde
-- **Estado de rechazo** → rojo
+  - Aceptada: el último estado pertenece al conjunto de aceptación.
+  - Rechazada: la cadena no puede completarse o termina en un estado no aceptador.
 
 ---
 
-## 🧩 Conceptos fundamentales de autómatas
+## Conceptos fundamentales de autómatas
 
 | Concepto | Descripción |
 |:---|:---|
@@ -75,29 +70,16 @@ AutoMindX no se limita a un simple "sí/no": ofrece una **experiencia visual int
 
 ---
 
-## 🏗️ Arquitectura del sistema
+## Arquitectura del sistema
 
 AutoMindX sigue una **arquitectura cliente-servidor** lógica, donde el cliente (vista web) se comunica con el servidor (lógica de negocio Java) a través del controlador. Se implementa el patrón **Modelo-Vista-Controlador (MVC)**:
 
 - **Modelo**: Contiene la definición del autómata (estados, transiciones, alfabeto) y la lógica de validación de cadenas. Implementado en Java.
 - **Vista**: Interfaz gráfica web construida con **HTML, CSS y Bootstrap 5**. Incluye el lienzo para dibujar el grafo y los paneles de control.
 - **Controlador**: Maneja los eventos del usuario (clics, entradas de texto) y coordina las acciones entre la vista y el modelo.
-
-Esta separación permite modificar la interfaz o la lógica de forma independiente, facilitando el mantenimiento y la evolución del proyecto.
-
 ---
 
-## 🖼️ Capturas de pantalla
-
-| Pantalla principal | Simulación de cadena |
-|:---:|:---:|
-| ![Editor](docs/editor.png) | ![Simulación](docs/simulacion.png) |
-
-*(Reemplaza las rutas con tus propias capturas)*
-
----
-
-## 🗂️ Estructura del proyecto
+## Estructura del proyecto
 
 ```plaintext
 AutoMindX/
