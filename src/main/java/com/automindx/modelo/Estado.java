@@ -1,4 +1,4 @@
-package main.java.com.automindx.modelo;
+package com.automindx.modelo;
 
 public class Estado {
 
