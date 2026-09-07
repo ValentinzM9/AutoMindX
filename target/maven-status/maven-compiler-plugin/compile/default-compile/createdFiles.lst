@@ -1,0 +1,4 @@
+com\automindx\modelo\Validador.class
+com\automindx\modelo\Transicion.class
+com\automindx\modelo\Estado.class
+com\automindx\modelo\Automata.class
