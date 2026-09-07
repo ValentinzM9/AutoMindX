@@ -1,19 +1,29 @@
 package com.automindx.modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Validador {
-    private Automata automata;
+   private Automata automata;
+    private List<Estado> recorrido;
 
     public Validador(Automata automata) {
         this.automata = automata;
+        this.recorrido = new ArrayList<>();
     }
 
     public boolean validar(String cadena) {
+
+        recorrido.clear();
 
         Estado estadoActual = automata.getEstadoInicial();
 
         if (estadoActual == null) {
             return false;
         }
+
+        // Guardamos el estado inicial
+        recorrido.add(estadoActual);
 
         for (char simbolo : cadena.toCharArray()) {
 
@@ -34,8 +44,15 @@ public class Validador {
             }
 
             estadoActual = transicionEncontrada.getDestino();
+
+            // Guardamos el nuevo estado recorrido
+            recorrido.add(estadoActual);
         }
 
         return automata.getEstadosFinales().contains(estadoActual);
+    }
+
+    public List<Estado> getRecorrido() {
+        return recorrido;
     }
 }
