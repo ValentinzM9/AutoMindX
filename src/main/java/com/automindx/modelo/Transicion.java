@@ -11,4 +11,28 @@ public class Transicion {
         this.destino = destino;
         this.simbolo = simbolo;
     }
+
+    public Estado getOrigen() {
+        return origen;
+    }
+
+    public void setOrigen(Estado origen) {
+        this.origen = origen;
+    }
+
+    public Estado getDestino() {
+        return destino;
+    }
+
+    public void setDestino(Estado destino) {
+        this.destino = destino;
+    }
+
+    public char getSimbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(char simbolo) {
+        this.simbolo = simbolo;
+    }
 }
