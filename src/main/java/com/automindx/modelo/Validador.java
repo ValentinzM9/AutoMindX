@@ -5,7 +5,8 @@ import java.util.List;
 
 public class Validador {
    private Automata automata;
-    private List<Estado> recorrido;
+   private List<Estado> recorrido;
+   private List<Transicion> transicionesRecorridas;
 
     public Validador(Automata automata) {
         this.automata = automata;
