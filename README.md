@@ -76,7 +76,7 @@ AutoMindX sigue una **arquitectura cliente-servidor** lógica, donde el cliente 
 
 - **Modelo**: Contiene la definición del autómata (estados, transiciones, alfabeto) y la lógica de validación de cadenas. Implementado en Java.
 - **Vista**: Interfaz gráfica web construida con **HTML, CSS y Bootstrap 5**. Incluye el lienzo para dibujar el grafo y los paneles de control.
-- **Controlador**: Maneja los eventos del usuario (clics, entradas de texto) y coordina las acciones entre la vista y el modelo.
+- **Controlador**: Maneja los eventos del usuario y coordina las acciones entre la vista y el modelo.
 ---
 
 ## Estructura del proyecto
@@ -89,7 +89,7 @@ AutoMindX/
 │   │   │   ├── modelo/          → Clases del modelo: Estado, Transicion, Automata, Validador
 │   │   │   ├── controlador/     → Clases controladoras: ControladorEditor, ControladorSimulacion
 │   │   │   ├── servicio/        → Lógica de negocio y comunicación con la vista
-│   │   │   └── Main.java        → Punto de entrada (servidor embebido o lanzador)
+│   │   │   └── Main.java        → Punto de entrada 
 │   │   └── resources/           → Recursos (iconos, fuentes)
 ├── web/
 │   ├── css/                     → Estilos personalizados y Bootstrap
