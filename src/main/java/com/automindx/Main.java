@@ -7,7 +7,7 @@ import com.automindx.modelo.Validador;
 
 public class Main {
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
 
         // Crear el autómata
         Automata automata = new Automata();
@@ -41,13 +41,19 @@ public class Main {
         // Crear el validador
         Validador validador = new Validador(automata);
 
-        // Validar una cadena
+        // Cadena que vamos a validar
         String cadena = "ab";
 
         boolean resultado = validador.validar(cadena);
 
-        // Mostrar resultado
+        // Mostrar información de la validación
         System.out.println("Cadena: " + cadena);
+        System.out.println("Recorrido:");
+
+        for (Estado estado : validador.getRecorrido()) {
+            System.out.println("-> " + estado.getNombre());
+        }
+
         System.out.println("Resultado: " + (resultado ? "ACEPTADA" : "RECHAZADA"));
     }
 }
