@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Validador {
-   private Automata automata;
-   private List<Estado> recorrido;
-   private List<Transicion> transicionesRecorridas;
+  private Automata automata;
+    private List<Estado> recorrido;
+    private List<Transicion> transicionesRecorridas;
 
     public Validador(Automata automata) {
         this.automata = automata;
         this.recorrido = new ArrayList<>();
+        this.transicionesRecorridas = new ArrayList<>();
     }
 
     public boolean validar(String cadena) {
 
         recorrido.clear();
+        transicionesRecorridas.clear();
 
         Estado estadoActual = automata.getEstadoInicial();
 
@@ -44,6 +46,9 @@ public class Validador {
                 return false;
             }
 
+            // Guardamos la transición utilizada
+            transicionesRecorridas.add(transicionEncontrada);
+
             estadoActual = transicionEncontrada.getDestino();
 
             // Guardamos el nuevo estado recorrido
@@ -55,5 +60,9 @@ public class Validador {
 
     public List<Estado> getRecorrido() {
         return recorrido;
+    }
+
+    public List<Transicion> getTransicionesRecorridas() {
+        return transicionesRecorridas;
     }
 }
