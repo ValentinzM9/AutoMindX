@@ -46,14 +46,26 @@ public class Main {
 
         boolean resultado = validador.validar(cadena);
 
-        // Mostrar información de la validación
-        System.out.println("Cadena: " + cadena);
-        System.out.println("Recorrido:");
+System.out.println("Cadena: " + cadena);
 
-        for (Estado estado : validador.getRecorrido()) {
-            System.out.println("-> " + estado.getNombre());
-        }
+System.out.println("Recorrido:");
 
-        System.out.println("Resultado: " + (resultado ? "ACEPTADA" : "RECHAZADA"));
+for (Estado estado : validador.getRecorrido()) {
+    System.out.println("-> " + estado.getNombre());
+}
+
+System.out.println("Transiciones recorridas:");
+
+for (Transicion transicion : validador.getTransicionesRecorridas()) {
+    System.out.println(
+        transicion.getOrigen().getNombre()
+        + " --"
+        + transicion.getSimbolo()
+        + "--> "
+        + transicion.getDestino().getNombre()
+    );
+}
+
+System.out.println("Resultado: " + (resultado ? "ACEPTADA" : "RECHAZADA"));
     }
 }

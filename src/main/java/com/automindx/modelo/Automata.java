@@ -39,6 +39,20 @@ public class Automata {
         this.estadosFinales.add(estado);
     }
 
+    public Transicion buscarTransicion(Estado origen, char simbolo) {
+
+    for (Transicion transicion : transiciones) {
+
+        if (transicion.getOrigen() == origen
+                && transicion.getSimbolo() == simbolo) {
+
+            return transicion;
+        }
+    }
+
+    return null;
+    }
+
     public List<Estado> getEstados() {
         return estados;
     }
