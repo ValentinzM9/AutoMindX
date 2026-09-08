@@ -1,3 +1,4 @@
+com\automindx\controlador\ControladorAutomata.class
 com\automindx\modelo\Validador.class
 com\automindx\modelo\Transicion.class
 com\automindx\modelo\Estado.class
