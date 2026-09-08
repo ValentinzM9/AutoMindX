@@ -10,7 +10,7 @@
 [![Estado](https://img.shields.io/badge/Estado-Activo-brightgreen)](#)
 
 > **Proyecto académico – Teoría de Autómatas y Lenguajes Formales**  
-> *Simulador de autómatas finitos deterministas (DFA) con editor visual y validación animada*  
+> *Simulador de autómatas finitos deterministas (DFA) con editor visual*  
 > *Arquitectura cliente-servidor con patrón MVC*  
 > *Universidad El Bosque - Compiladores*
 
