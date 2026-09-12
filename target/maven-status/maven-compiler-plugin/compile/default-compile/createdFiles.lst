@@ -1,6 +1,10 @@
 com\automindx\controlador\ControladorAutomata.class
-com\automindx\modelo\Validador.class
 com\automindx\modelo\Transicion.class
-com\automindx\modelo\Estado.class
+com\automindx\vista\PanelAutomata$1.class
 com\automindx\modelo\Automata.class
 com\automindx\Main.class
+com\automindx\modelo\Validador.class
+com\automindx\vista\PanelAutomata$2.class
+com\automindx\modelo\Estado.class
+com\automindx\vista\PanelAutomata.class
+com\automindx\vista\VentanaPrincipal.class

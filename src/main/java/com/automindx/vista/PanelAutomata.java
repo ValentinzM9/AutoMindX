@@ -8,19 +8,22 @@ import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Arc2D;
 
+/**
+ * Panel gráfico donde se dibuja y manipula el autómata.
+ */
 public class PanelAutomata extends JPanel {
 
     private Automata automata;
 
-    // Estado que estamos arrastrando
+    // Estado que actualmente se está arrastrando
     private Estado estadoSeleccionado;
 
-    // Diferencia entre el clic y el centro del estado
+    // Distancia entre el mouse y el centro del estado
     private int offsetX;
     private int offsetY;
 
@@ -31,7 +34,15 @@ public class PanelAutomata extends JPanel {
 
         this.automata = automata;
 
-        // Detectar clic sobre un estado
+        configurarMouse();
+    }
+
+    /**
+     * Configura los eventos del mouse para permitir
+     * seleccionar y arrastrar estados.
+     */
+    private void configurarMouse() {
+
         addMouseListener(new MouseAdapter() {
 
             @Override
@@ -59,7 +70,6 @@ public class PanelAutomata extends JPanel {
             }
         });
 
-        // Detectar movimiento del mouse
         addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
@@ -75,45 +85,71 @@ public class PanelAutomata extends JPanel {
                             e.getY() - offsetY
                     );
 
-                    // Actualizar el dibujo
                     repaint();
                 }
             }
         });
     }
 
+    /**
+     * Método principal de dibujo.
+     */
     @Override
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
 
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2 = (Graphics2D) g.create();
 
-        g2.setStroke(new BasicStroke(2));
+        try {
 
-        // Primero dibujamos las transiciones
-        for (Transicion transicion
-                : automata.getTransiciones()) {
+            g2.setStroke(
+                    new BasicStroke(2)
+            );
 
-            dibujarTransicion(g2, transicion);
-        }
+            /*
+             * Primero dibujamos las transiciones.
+             */
+            for (Transicion transicion
+                    : automata.getTransiciones()) {
 
-        // Después dibujamos los estados
-        for (Estado estado : automata.getEstados()) {
+                dibujarTransicion(
+                        g2,
+                        transicion
+                );
+            }
 
-            dibujarEstado(g2, estado);
+            /*
+             * Después dibujamos los estados.
+             */
+            for (Estado estado
+                    : automata.getEstados()) {
+
+                dibujarEstado(
+                        g2,
+                        estado
+                );
+            }
+
+        } finally {
+
+            g2.dispose();
         }
     }
 
     /**
-     * Dibuja un estado del autómata.
+     * Dibuja un estado.
      */
-    private void dibujarEstado(Graphics2D g2, Estado estado) {
+    private void dibujarEstado(
+            Graphics2D g2,
+            Estado estado) {
 
         int x = estado.getX();
         int y = estado.getY();
 
-        // Círculo principal
+        /*
+         * Círculo principal.
+         */
         g2.drawOval(
                 x - RADIO_ESTADO,
                 y - RADIO_ESTADO,
@@ -121,14 +157,18 @@ public class PanelAutomata extends JPanel {
                 RADIO_ESTADO * 2
         );
 
-        // Nombre del estado
+        /*
+         * Nombre del estado.
+         */
         g2.drawString(
                 estado.getNombre(),
                 x - 8,
                 y + 5
         );
 
-        // Segundo círculo para estado final
+        /*
+         * Segundo círculo si es estado final.
+         */
         if (estado.isEstadoFinal()) {
 
             g2.drawOval(
@@ -139,15 +179,20 @@ public class PanelAutomata extends JPanel {
             );
         }
 
-        // Flecha que indica el estado inicial
+        /*
+         * Flecha del estado inicial.
+         */
         if (estado.isInicial()) {
 
-            dibujarFlechaInicial(g2, estado);
+            dibujarFlechaInicial(
+                    g2,
+                    estado
+            );
         }
     }
 
     /**
-     * Dibuja una transición entre dos estados.
+     * Dibuja una transición.
      */
     private void dibujarTransicion(
             Graphics2D g2,
@@ -156,14 +201,10 @@ public class PanelAutomata extends JPanel {
         Estado origen = transicion.getOrigen();
         Estado destino = transicion.getDestino();
 
-        int x1 = origen.getX();
-        int y1 = origen.getY();
-
-        int x2 = destino.getX();
-        int y2 = destino.getY();
-
-        // Si origen y destino son el mismo estado,
-        // dibujamos un bucle.
+        /*
+         * Si la transición regresa al mismo estado,
+         * dibujamos un bucle.
+         */
         if (origen == destino) {
 
             dibujarBucle(
@@ -175,32 +216,62 @@ public class PanelAutomata extends JPanel {
             return;
         }
 
-        // Vector entre los dos estados
+        int x1 = origen.getX();
+        int y1 = origen.getY();
+
+        int x2 = destino.getX();
+        int y2 = destino.getY();
+
+        /*
+         * Diferencia entre los centros.
+         */
         double dx = x2 - x1;
         double dy = y2 - y1;
 
+        /*
+         * Distancia entre los estados.
+         */
         double distancia = Math.sqrt(
                 dx * dx + dy * dy
         );
 
-        // Evitamos división por cero
         if (distancia == 0) {
             return;
         }
 
-        // Dirección normalizada
+        /*
+         * Vector unitario.
+         */
         double ux = dx / distancia;
         double uy = dy / distancia;
 
-        // Punto donde comienza la flecha
-        int inicioX = (int) (x1 + ux * RADIO_ESTADO);
-        int inicioY = (int) (y1 + uy * RADIO_ESTADO);
+        /*
+         * Inicio de la transición,
+         * justo en el borde del estado origen.
+         */
+        int inicioX = (int) (
+                x1 + ux * RADIO_ESTADO
+        );
 
-        // Punto donde termina la flecha
-        int finX = (int) (x2 - ux * RADIO_ESTADO);
-        int finY = (int) (y2 - uy * RADIO_ESTADO);
+        int inicioY = (int) (
+                y1 + uy * RADIO_ESTADO
+        );
 
-        // Dibujar línea
+        /*
+         * Final de la transición,
+         * justo en el borde del estado destino.
+         */
+        int finX = (int) (
+                x2 - ux * RADIO_ESTADO
+        );
+
+        int finY = (int) (
+                y2 - uy * RADIO_ESTADO
+        );
+
+        /*
+         * Dibujar línea.
+         */
         g2.drawLine(
                 inicioX,
                 inicioY,
@@ -208,7 +279,9 @@ public class PanelAutomata extends JPanel {
                 finY
         );
 
-        // Dibujar punta de flecha
+        /*
+         * Dibujar flecha.
+         */
         dibujarPuntaFlecha(
                 g2,
                 inicioX,
@@ -217,20 +290,31 @@ public class PanelAutomata extends JPanel {
                 finY
         );
 
-        // Dibujar símbolo
-        int medioX = (inicioX + finX) / 2;
-        int medioY = (inicioY + finY) / 2;
+        /*
+         * Posición del símbolo.
+         */
+        int medioX =
+                (inicioX + finX) / 2;
+
+        int medioY =
+                (inicioY + finY) / 2;
 
         g2.drawString(
-                String.valueOf(transicion.getSimbolo()),
+                String.valueOf(
+                        transicion.getSimbolo()
+                ),
                 medioX,
                 medioY - 8
         );
     }
 
     /**
-     * Dibuja un bucle cuando una transición vuelve
-     * al mismo estado.
+     * Dibuja una transición que comienza y termina
+     * en el mismo estado.
+     *
+     * El bucle se construye mediante una curva
+     * Bézier para que sus extremos estén conectados
+     * directamente al estado.
      */
     private void dibujarBucle(
             Graphics2D g2,
@@ -240,47 +324,86 @@ public class PanelAutomata extends JPanel {
         int x = estado.getX();
         int y = estado.getY();
 
-        int ancho = 50;
-        int alto = 50;
+        /*
+         * Puntos donde el bucle se conecta
+         * con el estado.
+         */
+        int inicioX = x - 20;
+        int inicioY = y - 22;
 
-        int arcoX = x - ancho / 2;
-        int arcoY = y - RADIO_ESTADO - 35;
+        int finX = x + 20;
+        int finY = y - 22;
 
-        Arc2D.Double arco = new Arc2D.Double(
-                arcoX,
-                arcoY,
-                ancho,
-                alto,
-                30,
-                300,
-                Arc2D.OPEN
+        /*
+         * Creamos una curva.
+         *
+         * La curva:
+         *
+         *        ┌────────┐
+         *       /          \
+         *      /            \
+         *     ●              ●
+         *       \          /
+         *          estado
+         *
+         * Los extremos quedan conectados
+         * al estado.
+         */
+        Path2D.Double bucle =
+                new Path2D.Double();
+
+        bucle.moveTo(
+                inicioX,
+                inicioY
         );
 
-        g2.draw(arco);
+        bucle.curveTo(
+                x - 75,
+                y - 100,
 
-        // Punta de flecha del bucle
-        int puntaX = x + 20;
-        int puntaY = y - 55;
+                x + 75,
+                y - 100,
+
+                finX,
+                finY
+        );
+
+        /*
+         * Dibujar el bucle.
+         */
+        g2.draw(bucle);
+
+        /*
+         * La flecha se coloca exactamente
+         * en el punto donde termina la curva.
+         *
+         * Como la curva llega desde arriba-derecha
+         * hacia el estado, la flecha apunta
+         * hacia abajo-izquierda.
+         */
+        int puntoAnteriorX = x + 38;
+        int puntoAnteriorY = y - 65;
 
         dibujarPuntaFlecha(
                 g2,
-                x + 15,
-                y - 48,
-                puntaX,
-                puntaY
+                puntoAnteriorX,
+                puntoAnteriorY,
+                finX,
+                finY
         );
 
-        // Símbolo del bucle
+        /*
+         * Símbolo de la transición.
+         */
         g2.drawString(
                 String.valueOf(simbolo),
-                x + 25,
-                y - 55
+                x - 5,
+                y - 88
         );
     }
 
     /**
-     * Dibuja una flecha que indica cuál es
-     * el estado inicial.
+     * Dibuja la flecha del estado inicial.
      */
     private void dibujarFlechaInicial(
             Graphics2D g2,
@@ -295,6 +418,9 @@ public class PanelAutomata extends JPanel {
         int finX = x - RADIO_ESTADO;
         int finY = y;
 
+        /*
+         * Línea.
+         */
         g2.drawLine(
                 inicioX,
                 inicioY,
@@ -302,6 +428,9 @@ public class PanelAutomata extends JPanel {
                 finY
         );
 
+        /*
+         * Punta.
+         */
         dibujarPuntaFlecha(
                 g2,
                 inicioX,
@@ -321,16 +450,31 @@ public class PanelAutomata extends JPanel {
             int x2,
             int y2) {
 
+        /*
+         * Dirección de la línea.
+         */
         double angulo = Math.atan2(
                 y2 - y1,
                 x2 - x1
         );
 
+        /*
+         * Tamaño de la punta.
+         */
         int largo = 10;
 
-        double angulo1 = angulo + Math.PI / 6;
-        double angulo2 = angulo - Math.PI / 6;
+        /*
+         * Ángulos de los lados de la punta.
+         */
+        double angulo1 =
+                angulo + Math.PI / 6;
 
+        double angulo2 =
+                angulo - Math.PI / 6;
+
+        /*
+         * Primer extremo.
+         */
         int x3 = (int) (
                 x2 - largo * Math.cos(angulo1)
         );
@@ -339,6 +483,9 @@ public class PanelAutomata extends JPanel {
                 y2 - largo * Math.sin(angulo1)
         );
 
+        /*
+         * Segundo extremo.
+         */
         int x4 = (int) (
                 x2 - largo * Math.cos(angulo2)
         );
@@ -347,25 +494,48 @@ public class PanelAutomata extends JPanel {
                 y2 - largo * Math.sin(angulo2)
         );
 
-        g2.drawLine(x2, y2, x3, y3);
-        g2.drawLine(x2, y2, x4, y4);
+        /*
+         * Dibujar punta.
+         */
+        g2.drawLine(
+                x2,
+                y2,
+                x3,
+                y3
+        );
+
+        g2.drawLine(
+                x2,
+                y2,
+                x4,
+                y4
+        );
     }
 
     /**
-     * Busca si el usuario hizo clic sobre un estado.
+     * Busca el estado sobre el que hizo clic
+     * el usuario.
      */
     private Estado buscarEstado(
             int mouseX,
             int mouseY) {
 
-        for (Estado estado : automata.getEstados()) {
+        for (Estado estado
+                : automata.getEstados()) {
 
             int x = estado.getX();
             int y = estado.getY();
 
-            int distanciaX = mouseX - x;
-            int distanciaY = mouseY - y;
+            int distanciaX =
+                    mouseX - x;
 
+            int distanciaY =
+                    mouseY - y;
+
+            /*
+             * Comprobar si el clic está dentro
+             * del círculo.
+             */
             if (distanciaX * distanciaX
                     + distanciaY * distanciaY
                     <= RADIO_ESTADO * RADIO_ESTADO) {
