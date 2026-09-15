@@ -3,23 +3,29 @@ package com.automindx.vista;
 import com.automindx.controlador.ControladorAutomata;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 
 /**
- * Panel que contiene los controles para interactuar
- * con el autómata.
+ * Panel de controles de AutoMindX.
  */
 public class PanelControles extends JPanel {
 
     private ControladorAutomata controlador;
 
     private JTextField campoCadena;
+
     private JLabel etiquetaResultado;
+
     private JButton botonValidar;
+
+    private JRadioButton opcionEjemplo;
+    private JRadioButton opcionDiseñar;
 
     public PanelControles(
             ControladorAutomata controlador) {
@@ -30,7 +36,7 @@ public class PanelControles extends JPanel {
     }
 
     /**
-     * Configura los componentes del panel.
+     * Configura el panel.
      */
     private void configurarPanel() {
 
@@ -49,45 +55,124 @@ public class PanelControles extends JPanel {
                 )
         );
 
-        // Título del campo
+        /*
+         * Título del modo.
+         */
+        JLabel tituloModo =
+                new JLabel(
+                        "Modo de trabajo:"
+                );
+
+        add(tituloModo);
+
+        /*
+         * Opción para probar el ejemplo.
+         */
+        opcionEjemplo =
+                new JRadioButton(
+                        "Probar ejemplo",
+                        true
+                );
+
+        add(opcionEjemplo);
+
+        /*
+         * Opción para diseñar.
+         */
+        opcionDiseñar =
+                new JRadioButton(
+                        "Diseñar mi autómata"
+                );
+
+        add(opcionDiseñar);
+
+        /*
+         * Agrupar las dos opciones.
+         */
+        ButtonGroup grupoModos =
+                new ButtonGroup();
+
+        grupoModos.add(opcionEjemplo);
+        grupoModos.add(opcionDiseñar);
+
+        /*
+         * Separación visual.
+         */
+        add(
+                new JLabel(
+                        "------------------------"
+                )
+        );
+
+        /*
+         * Cadena.
+         */
         JLabel etiquetaCadena =
-                new JLabel("Cadena a validar:");
+                new JLabel(
+                        "Cadena a validar:"
+                );
 
         add(etiquetaCadena);
 
-        // Campo donde el usuario escribe la cadena
+        /*
+         * Campo de cadena.
+         */
         campoCadena =
                 new JTextField();
 
         add(campoCadena);
 
-        // Botón para validar
+        /*
+         * Botón validar.
+         */
         botonValidar =
-                new JButton("VALIDAR CADENA");
+                new JButton(
+                        "VALIDAR CADENA"
+                );
 
         add(botonValidar);
 
-        // Etiqueta del resultado
-        JLabel etiquetaTituloResultado =
-                new JLabel("Resultado:");
+        /*
+         * Título del resultado.
+         */
+        JLabel tituloResultado =
+                new JLabel(
+                        "Resultado:"
+                );
 
-        add(etiquetaTituloResultado);
+        add(tituloResultado);
 
-        // Resultado de la validación
+        /*
+         * Resultado.
+         */
         etiquetaResultado =
-                new JLabel("Pendiente");
+                new JLabel(
+                        "Pendiente"
+                );
 
         add(etiquetaResultado);
 
-        // Evento del botón
+        /*
+         * Evento de validación.
+         */
         botonValidar.addActionListener(
                 e -> validarCadena()
+        );
+
+        /*
+         * Evento del modo de trabajo.
+         */
+        opcionEjemplo.addActionListener(
+                e -> cambiarModoEjemplo()
+        );
+
+        opcionDiseñar.addActionListener(
+                e -> cambiarModoDiseño()
         );
     }
 
     /**
-     * Obtiene la cadena escrita por el usuario
-     * y la envía al controlador.
+     * Valida la cadena ingresada.
      */
     private void validarCadena() {
 
@@ -95,7 +180,9 @@ public class PanelControles extends JPanel {
                 campoCadena.getText();
 
         boolean resultado =
-                controlador.validarCadena(cadena);
+                controlador.validarCadena(
+                        cadena
+                );
 
         if (resultado) {
 
@@ -109,5 +196,27 @@ public class PanelControles extends JPanel {
                     "RECHAZADA"
             );
         }
+    }
+
+    /**
+     * Acción cuando se selecciona
+     * el modo de ejemplo.
+     */
+    private void cambiarModoEjemplo() {
+
+        etiquetaResultado.setText(
+                "Modo ejemplo"
+        );
+    }
+
+    /**
+     * Acción cuando se selecciona
+     * el modo de diseño.
+     */
+    private void cambiarModoDiseño() {
+
+        etiquetaResultado.setText(
+                "Modo diseño"
+        );
     }
 }
