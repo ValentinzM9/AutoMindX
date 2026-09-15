@@ -1,22 +1,89 @@
 package com.automindx.vista;
 
+import com.automindx.controlador.ControladorAutomata;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
-import com.automindx.modelo.Automata;
-
+/**
+ * Ventana principal de AutoMindX.
+ */
 public class VentanaPrincipal extends JFrame {
 
-     public VentanaPrincipal(Automata automata) {
+    private ControladorAutomata controlador;
 
-        setTitle("AutoMindX - Simulador de Autómatas");
-        setSize(1000, 700);
+    private PanelAutomata panelAutomata;
+    private PanelControles panelControles;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public VentanaPrincipal(
+            ControladorAutomata controlador) {
+
+        this.controlador = controlador;
+
+        configurarVentana();
+        crearComponentes();
+    }
+
+    /**
+     * Configura las características principales
+     * de la ventana.
+     */
+    private void configurarVentana() {
+
+        setTitle(
+                "AutoMindX - Simulador de Autómatas"
+        );
+
+        setSize(
+                1000,
+                650
+        );
 
         setLocationRelativeTo(null);
 
-        PanelAutomata panelAutomata = new PanelAutomata(automata);
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
 
-        add(panelAutomata);
+        setLayout(
+                new BorderLayout()
+        );
+    }
+
+    /**
+     * Crea y organiza los componentes
+     * de la ventana.
+     */
+    private void crearComponentes() {
+
+        /*
+         * Panel donde se dibuja el autómata.
+         */
+        panelAutomata =
+                new PanelAutomata(
+                        controlador.getAutomata()
+                );
+
+        /*
+         * Panel de controles.
+         */
+        panelControles =
+                new PanelControles(
+                        controlador
+                );
+
+        add(
+                panelAutomata,
+                BorderLayout.CENTER
+        );
+
+        /*
+         * Agregar controles a la derecha.
+         */
+        add(
+                panelControles,
+                BorderLayout.EAST
+        );
     }
 }

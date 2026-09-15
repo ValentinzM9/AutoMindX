@@ -1,23 +1,56 @@
 package com.automindx;
 
-import com.automindx.modelo.Automata;
+import com.automindx.controlador.ControladorAutomata;
 import com.automindx.modelo.Estado;
 import com.automindx.modelo.Transicion;
 import com.automindx.vista.VentanaPrincipal;
+
+import javax.swing.SwingUtilities;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // Crear el autómata
-        Automata automata = new Automata();
+        /*
+         * Crear el controlador.
+         */
+        ControladorAutomata controlador =
+                new ControladorAutomata();
 
-        // Crear estados
+        /*
+         * Crear el autómata de ejemplo.
+         */
+        crearAutomataEjemplo(controlador);
+
+        /*
+         * Crear la interfaz gráfica.
+         */
+        SwingUtilities.invokeLater(() -> {
+
+            VentanaPrincipal ventana =
+                    new VentanaPrincipal(
+                            controlador
+                    );
+
+            ventana.setVisible(true);
+        });
+    }
+
+    /**
+     * Crea el autómata que hemos utilizado
+     * durante nuestras pruebas.
+     */
+    private static void crearAutomataEjemplo(
+            ControladorAutomata controlador) {
+
+        /*
+         * Crear estados.
+         */
         Estado q0 = new Estado(
                 "q0",
                 true,
                 false,
-                200,
+                250,
                 300
         );
 
@@ -25,45 +58,60 @@ public class Main {
                 "q1",
                 false,
                 true,
-                500,
+                550,
                 300
         );
 
-        // Agregar estados
-        automata.agregarEstado(q0);
-        automata.agregarEstado(q1);
+        /*
+         * Agregar estados.
+         */
+        controlador.agregarEstado(q0);
+        controlador.agregarEstado(q1);
 
-        // Establecer estado inicial
-        automata.establecerEstadoInicial(q0);
+        /*
+         * Estado inicial.
+         */
+        controlador.establecerEstadoInicial(q0);
 
-        // Establecer estado final
-        automata.agregarEstadoFinal(q1);
+        /*
+         * Estado final.
+         */
+        controlador.agregarEstadoFinal(q1);
 
-        // Agregar símbolos al alfabeto
-        automata.agregarSimbolo('a');
-        automata.agregarSimbolo('b');
+        /*
+         * Alfabeto.
+         */
+        controlador.agregarSimbolo('a');
+        controlador.agregarSimbolo('b');
 
-        // Crear transiciones
-        Transicion t1 = new Transicion(
-                q0,
-                q1,
-                'a'
-        );
+        /*
+         * Transición:
+         *
+         * q0 --a--> q1
+         */
+        Transicion t1 =
+                new Transicion(
+                        q0,
+                        q1,
+                        'a'
+                );
 
-        Transicion t2 = new Transicion(
-                q1,
-                q1,
-                'b'
-        );
+        /*
+         * Bucle:
+         *
+         * q1 --b--> q1
+         */
+        Transicion t2 =
+                new Transicion(
+                        q1,
+                        q1,
+                        'b'
+                );
 
-        // Agregar transiciones al autómata
-        automata.agregarTransicion(t1);
-        automata.agregarTransicion(t2);
-
-        // Crear ventana
-        VentanaPrincipal ventana =
-                new VentanaPrincipal(automata);
-
-        ventana.setVisible(true);
+        /*
+         * Agregar transiciones.
+         */
+        controlador.agregarTransicion(t1);
+        controlador.agregarTransicion(t2);
     }
 }
