@@ -75,7 +75,7 @@ AutoMindX no se limita a un simple "sí/no": ofrece una **experiencia visual int
 AutoMindX sigue una **arquitectura cliente-servidor** lógica, donde el cliente (vista web) se comunica con el servidor (lógica de negocio Java) a través del controlador. Se implementa el patrón **Modelo-Vista-Controlador (MVC)**:
 
 - **Modelo**: Contiene la definición del autómata (estados, transiciones, alfabeto) y la lógica de validación de cadenas. Implementado en Java.
-- **Vista**: Interfaz gráfica web construida con **HTML, CSS y Bootstrap 5**. Incluye el lienzo para dibujar el grafo y los paneles de control.
+- **Vista**: Interfaz gráfica web construida con **HTML, CSS y Bootstrap 5**. Incluye el lienzo para dibujar el grafo y los paneles de control entre las funciones del usuario. 
 - **Controlador**: Maneja los eventos del usuario y coordina las acciones entre la vista y el modelo.
 ---
 
