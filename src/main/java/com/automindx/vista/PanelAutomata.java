@@ -1,5 +1,12 @@
 package com.automindx.vista;
 
+import com.automindx.modelo.Automata;
+import com.automindx.modelo.Estado;
+import com.automindx.modelo.Transicion;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -9,49 +16,78 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Path2D;
 
-import javax.swing.JPanel;
-
-import com.automindx.modelo.Automata;
-import com.automindx.modelo.Estado;
-import com.automindx.modelo.Transicion;
-
 public class PanelAutomata extends JPanel {
 
     private final Automata automata;
+
     private Estado estadoSeleccionado;
+    private Estado estadoOrigenTransicion;
+
     private int offsetX;
     private int offsetY;
+
     private boolean modoCrearEstado = false;
+    private boolean modoCrearTransicion = false;
 
     private static final int RADIO_ESTADO = 30;
 
     public PanelAutomata(Automata automata) {
         this.automata = automata;
+
+        setBackground(java.awt.Color.WHITE);
+
         configurarMouse();
     }
 
     public void activarModoCrearEstado() {
         modoCrearEstado = true;
+        modoCrearTransicion = false;
         setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void desactivarModoCrearEstado() {
         modoCrearEstado = false;
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        actualizarCursor();
+    }
+
+    public void activarModoCrearTransicion() {
+        modoCrearTransicion = true;
+        modoCrearEstado = false;
+        estadoOrigenTransicion = null;
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    public void desactivarModosEdicion() {
+        modoCrearEstado = false;
+        modoCrearTransicion = false;
+        estadoOrigenTransicion = null;
+        estadoSeleccionado = null;
+        actualizarCursor();
+    }
+
+    private void actualizarCursor() {
+        if (modoCrearEstado) {
+            setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        } else if (modoCrearTransicion) {
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
+        } else {
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
     }
 
     private void configurarMouse() {
+
         addMouseListener(new MouseAdapter() {
 
             @Override
             public void mousePressed(MouseEvent e) {
 
+                Estado estadoEncontrado =
+                        buscarEstado(e.getX(), e.getY());
+
                 if (modoCrearEstado) {
 
-                    Estado estadoExistente =
-                            buscarEstado(e.getX(), e.getY());
-
-                    if (estadoExistente == null) {
+                    if (estadoEncontrado == null) {
                         crearEstado(e.getX(), e.getY());
                         desactivarModoCrearEstado();
                     }
@@ -59,10 +95,34 @@ public class PanelAutomata extends JPanel {
                     return;
                 }
 
-                estadoSeleccionado =
-                        buscarEstado(e.getX(), e.getY());
+                if (modoCrearTransicion) {
 
-                if (estadoSeleccionado != null) {
+                    if (estadoEncontrado != null) {
+
+                        if (estadoOrigenTransicion == null) {
+
+                            estadoOrigenTransicion = estadoEncontrado;
+
+                        } else {
+
+                            crearTransicion(
+                                    estadoOrigenTransicion,
+                                    estadoEncontrado
+                            );
+
+                            estadoOrigenTransicion = null;
+                        }
+
+                        repaint();
+                    }
+
+                    return;
+                }
+
+                if (estadoEncontrado != null) {
+
+                    estadoSeleccionado = estadoEncontrado;
+
                     offsetX =
                             e.getX() - estadoSeleccionado.getX();
 
@@ -82,7 +142,8 @@ public class PanelAutomata extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
 
-                if (estadoSeleccionado != null) {
+                if (estadoSeleccionado != null
+                        && !modoCrearTransicion) {
 
                     estadoSeleccionado.setX(
                             e.getX() - offsetX
@@ -113,6 +174,63 @@ public class PanelAutomata extends JPanel {
                 );
 
         automata.agregarEstado(nuevoEstado);
+
+        repaint();
+    }
+
+    private void crearTransicion(
+            Estado origen,
+            Estado destino) {
+
+        String entrada =
+                JOptionPane.showInputDialog(
+                        this,
+                        "Ingresa el símbolo de la transición:",
+                        "Crear transición",
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+        if (entrada == null || entrada.trim().isEmpty()) {
+            return;
+        }
+
+        entrada = entrada.trim();
+
+        if (entrada.length() != 1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Debes ingresar exactamente un símbolo.",
+                    "Símbolo inválido",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        char simbolo = entrada.charAt(0);
+
+        if (automata.buscarTransicion(origen, simbolo) != null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ya existe una transición desde "
+                            + origen.getNombre()
+                            + " con el símbolo "
+                            + simbolo,
+                    "Transición duplicada",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        Transicion nuevaTransicion =
+                new Transicion(
+                        origen,
+                        destino,
+                        simbolo
+                );
+
+        automata.agregarTransicion(nuevaTransicion);
 
         repaint();
     }
@@ -183,11 +301,7 @@ public class PanelAutomata extends JPanel {
         }
 
         if (estado.isInicial()) {
-
-            dibujarFlechaInicial(
-                    g2,
-                    estado
-            );
+            dibujarFlechaInicial(g2, estado);
         }
     }
 
@@ -195,20 +309,15 @@ public class PanelAutomata extends JPanel {
             Graphics2D g2,
             Transicion transicion) {
 
-        Estado origen =
-                transicion.getOrigen();
-
-        Estado destino =
-                transicion.getDestino();
+        Estado origen = transicion.getOrigen();
+        Estado destino = transicion.getDestino();
 
         if (origen == destino) {
-
             dibujarBucle(
                     g2,
                     origen,
                     transicion.getSimbolo()
             );
-
             return;
         }
 
@@ -222,9 +331,7 @@ public class PanelAutomata extends JPanel {
         double dy = y2 - y1;
 
         double distancia =
-                Math.sqrt(
-                        dx * dx + dy * dy
-                );
+                Math.sqrt(dx * dx + dy * dy);
 
         if (distancia == 0) {
             return;
@@ -234,24 +341,16 @@ public class PanelAutomata extends JPanel {
         double uy = dy / distancia;
 
         int inicioX =
-                (int) (
-                        x1 + ux * RADIO_ESTADO
-                );
+                (int) (x1 + ux * RADIO_ESTADO);
 
         int inicioY =
-                (int) (
-                        y1 + uy * RADIO_ESTADO
-                );
+                (int) (y1 + uy * RADIO_ESTADO);
 
         int finX =
-                (int) (
-                        x2 - ux * RADIO_ESTADO
-                );
+                (int) (x2 - ux * RADIO_ESTADO);
 
         int finY =
-                (int) (
-                        y2 - uy * RADIO_ESTADO
-                );
+                (int) (y2 - uy * RADIO_ESTADO);
 
         g2.drawLine(
                 inicioX,
@@ -275,9 +374,7 @@ public class PanelAutomata extends JPanel {
                 (inicioY + finY) / 2;
 
         g2.drawString(
-                String.valueOf(
-                        transicion.getSimbolo()
-                ),
+                String.valueOf(transicion.getSimbolo()),
                 medioX,
                 medioY - 8
         );
@@ -435,11 +532,10 @@ public class PanelAutomata extends JPanel {
             int distanciaY =
                     mouseY - y;
 
-            if (
-                    distanciaX * distanciaX
+            if (distanciaX * distanciaX
                     + distanciaY * distanciaY
-                    <= RADIO_ESTADO * RADIO_ESTADO
-            ) {
+                    <= RADIO_ESTADO * RADIO_ESTADO) {
+
                 return estado;
             }
         }

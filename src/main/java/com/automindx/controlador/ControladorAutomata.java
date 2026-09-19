@@ -6,13 +6,13 @@ import com.automindx.modelo.Transicion;
 import com.automindx.modelo.Validador;
 
 public class ControladorAutomata {
-    
+
     private Automata automata;
     private Validador validador;
 
     public ControladorAutomata() {
-        this.automata = new Automata();
-        this.validador = new Validador(automata);
+        automata = new Automata();
+        validador = new Validador(automata);
     }
 
     public void agregarEstado(Estado estado) {
@@ -35,8 +35,29 @@ public class ControladorAutomata {
         automata.agregarEstadoFinal(estado);
     }
 
+    public void quitarEstadoFinal(Estado estado) {
+        automata.quitarEstadoFinal(estado);
+    }
+
+    public void alternarEstadoFinal(Estado estado) {
+
+        if (automata.esEstadoFinal(estado)) {
+            automata.quitarEstadoFinal(estado);
+        } else {
+            automata.agregarEstadoFinal(estado);
+        }
+    }
+
     public boolean validarCadena(String cadena) {
+        if (cadena == null) {
+            return false;
+        }
+
         return validador.validar(cadena);
+    }
+
+    public void limpiarAutomata() {
+        automata.limpiar();
     }
 
     public Automata getAutomata() {
