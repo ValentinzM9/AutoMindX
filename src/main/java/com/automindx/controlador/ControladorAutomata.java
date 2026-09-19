@@ -20,7 +20,11 @@ public class ControladorAutomata {
     }
 
     public void eliminarEstado(Estado estado) {
-        automata.eliminarEstado(estado);
+        if (estado == null) {
+            return;
+        }
+
+        automata.getEstados().remove(estado);
     }
 
     public void agregarSimbolo(char simbolo) {

@@ -35,9 +35,6 @@ public class PanelAutomata extends JPanel {
     private static final Color COLOR_ESTADO =
             new Color(25, 118, 210);
 
-    private static final Color COLOR_RECORRIDO =
-            new Color(255, 152, 0);
-
     private static final Color COLOR_ACEPTADA =
             new Color(46, 125, 50);
 
