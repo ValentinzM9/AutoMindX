@@ -33,7 +33,7 @@ public class PanelAutomata extends JPanel {
     private static final int RADIO = 30;
 
     private static final Color COLOR_ESTADO =
-            new Color(25, 118, 210);
+        new Color(142, 68, 173);
 
     private static final Color COLOR_ACEPTADA =
             new Color(46, 125, 50);

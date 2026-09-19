@@ -36,7 +36,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton botonSalir;
 
     private static final Color COLOR_ACENTO =
-            new Color(25, 118, 210);
+        new Color(142, 68, 173);
 
     public VentanaPrincipal(
             ControladorAutomata controlador) {
