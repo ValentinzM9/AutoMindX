@@ -21,9 +21,34 @@ public class Automata {
     }
 
     public void agregarEstado(Estado estado) {
-        if (estado != null && !estados.contains(estado)) {
+
+        if (estado != null
+                && !estados.contains(estado)) {
+
             estados.add(estado);
         }
+    }
+
+    public void eliminarEstado(Estado estado) {
+
+        if (estado == null) {
+            return;
+        }
+
+        estados.remove(estado);
+        estadosFinales.remove(estado);
+
+        transiciones.removeIf(
+                transicion ->
+                        transicion.getOrigen().equals(estado)
+                                || transicion.getDestino().equals(estado)
+        );
+
+        if (estado.equals(estadoInicial)) {
+            estadoInicial = null;
+        }
+
+        reconstruirAlfabeto();
     }
 
     public void agregarSimbolo(char simbolo) {
@@ -31,20 +56,49 @@ public class Automata {
     }
 
     public void agregarTransicion(Transicion transicion) {
-        if (transicion != null && !transiciones.contains(transicion)) {
+
+        if (transicion == null) {
+            return;
+        }
+
+        if (transicion.getOrigen() == null
+                || transicion.getDestino() == null) {
+            return;
+        }
+
+        if (!transiciones.contains(transicion)) {
+
             transiciones.add(transicion);
-            agregarSimbolo(transicion.getSimbolo());
+
+            agregarSimbolo(
+                    transicion.getSimbolo()
+            );
         }
     }
 
-    public void establecerEstadoInicial(Estado estado) {
+    public void eliminarTransicion(
+            Transicion transicion) {
+
+        if (transicion == null) {
+            return;
+        }
+
+        transiciones.remove(transicion);
+        reconstruirAlfabeto();
+    }
+
+    public void establecerEstadoInicial(
+            Estado estado) {
 
         if (estado == null) {
             estadoInicial = null;
             return;
         }
 
-        // Primero, todos los estados dejan de ser iniciales.
+        if (!estados.contains(estado)) {
+            return;
+        }
+
         for (Estado estadoActual : estados) {
             estadoActual.setInicial(false);
         }
@@ -53,23 +107,38 @@ public class Automata {
         estado.setInicial(true);
     }
 
-    public void agregarEstadoFinal(Estado estado) {
+    public void agregarEstadoFinal(
+            Estado estado) {
 
-        if (estado != null && !estadosFinales.contains(estado)) {
+        if (estado == null) {
+            return;
+        }
+
+        if (!estados.contains(estado)) {
+            return;
+        }
+
+        if (!estadosFinales.contains(estado)) {
+
             estadosFinales.add(estado);
             estado.setEstadoFinal(true);
         }
     }
 
-    public void quitarEstadoFinal(Estado estado) {
+    public void quitarEstadoFinal(
+            Estado estado) {
 
-        if (estado != null) {
-            estadosFinales.remove(estado);
-            estado.setEstadoFinal(false);
+        if (estado == null) {
+            return;
         }
+
+        estadosFinales.remove(estado);
+        estado.setEstadoFinal(false);
     }
 
-    public boolean esEstadoFinal(Estado estado) {
+    public boolean esEstadoFinal(
+            Estado estado) {
+
         return estadosFinales.contains(estado);
     }
 
@@ -77,9 +146,14 @@ public class Automata {
             Estado origen,
             char simbolo) {
 
-        for (Transicion transicion : transiciones) {
+        if (origen == null) {
+            return null;
+        }
 
-            if (transicion.getOrigen() == origen
+        for (Transicion transicion :
+                transiciones) {
+
+            if (transicion.getOrigen().equals(origen)
                     && transicion.getSimbolo() == simbolo) {
 
                 return transicion;
@@ -87,6 +161,19 @@ public class Automata {
         }
 
         return null;
+    }
+
+    private void reconstruirAlfabeto() {
+
+        alfabeto.clear();
+
+        for (Transicion transicion :
+                transiciones) {
+
+            alfabeto.add(
+                    transicion.getSimbolo()
+            );
+        }
     }
 
     public void limpiar() {
@@ -102,39 +189,19 @@ public class Automata {
         return estados;
     }
 
-    public void setEstados(List<Estado> estados) {
-        this.estados = estados;
-    }
-
     public Set<Character> getAlfabeto() {
         return alfabeto;
-    }
-
-    public void setAlfabeto(Set<Character> alfabeto) {
-        this.alfabeto = alfabeto;
     }
 
     public List<Transicion> getTransiciones() {
         return transiciones;
     }
 
-    public void setTransiciones(List<Transicion> transiciones) {
-        this.transiciones = transiciones;
-    }
-
     public Estado getEstadoInicial() {
         return estadoInicial;
     }
 
-    public void setEstadoInicial(Estado estadoInicial) {
-        this.estadoInicial = estadoInicial;
-    }
-
     public List<Estado> getEstadosFinales() {
         return estadosFinales;
-    }
-
-    public void setEstadosFinales(List<Estado> estadosFinales) {
-        this.estadosFinales = estadosFinales;
     }
 }

@@ -1,6 +1,7 @@
 package com.automindx.vista;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -34,7 +35,11 @@ public class VentanaPrincipal extends JFrame {
     private JButton botonLimpiar;
     private JButton botonSalir;
 
-    public VentanaPrincipal(ControladorAutomata controlador) {
+    private static final Color COLOR_ACENTO =
+            new Color(25, 118, 210);
+
+    public VentanaPrincipal(
+            ControladorAutomata controlador) {
 
         this.controlador = controlador;
 
@@ -90,7 +95,7 @@ public class VentanaPrincipal extends JFrame {
 
         panelAutomata =
                 new PanelAutomata(
-                        controlador.getAutomata()
+                        controlador
                 );
 
         panelAutomata.setBorder(
@@ -158,7 +163,7 @@ public class VentanaPrincipal extends JFrame {
                                 0,
                                 1,
                                 0,
-                                java.awt.Color.LIGHT_GRAY
+                                Color.LIGHT_GRAY
                         ),
                         new EmptyBorder(
                                 5,
@@ -176,10 +181,14 @@ public class VentanaPrincipal extends JFrame {
 
         etiquetaTitulo.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.BOLD,
                         24
                 )
+        );
+
+        etiquetaTitulo.setForeground(
+                COLOR_ACENTO
         );
 
         JLabel subtitulo =
@@ -189,10 +198,14 @@ public class VentanaPrincipal extends JFrame {
 
         subtitulo.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.PLAIN,
                         13
                 )
+        );
+
+        subtitulo.setForeground(
+                Color.GRAY
         );
 
         JPanel informacion =
@@ -231,7 +244,7 @@ public class VentanaPrincipal extends JFrame {
                                 0,
                                 0,
                                 0,
-                                java.awt.Color.LIGHT_GRAY
+                                Color.LIGHT_GRAY
                         ),
                         new EmptyBorder(
                                 8,
@@ -309,13 +322,10 @@ public class VentanaPrincipal extends JFrame {
 
     private void limpiarArea() {
 
-        controlador.getAutomata()
-                .getEstados()
-                .clear();
+        controlador.limpiarAutomata();
 
-        controlador.getAutomata()
-                .getTransiciones()
-                .clear();
+        panelAutomata.limpiarResaltado();
+        panelAutomata.desactivarModosEdicion();
 
         etiquetaEstado.setText(
                 "Área de diseño limpiada"
