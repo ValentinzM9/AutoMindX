@@ -2,10 +2,11 @@ com\automindx\controlador\ControladorAutomata.class
 com\automindx\modelo\Transicion.class
 com\automindx\vista\PanelAutomata$1.class
 com\automindx\modelo\Automata.class
-com\automindx\Main.class
+com\automindx\modelo\AutomataNoDeterminista.class
 com\automindx\modelo\Validador.class
 com\automindx\vista\PanelControles$1.class
 com\automindx\modelo\Estado.class
+com\automindx\Main.class
 com\automindx\vista\PanelAutomata.class
 com\automindx\vista\PanelControles.class
 com\automindx\modelo\Validador$Resultado.class
