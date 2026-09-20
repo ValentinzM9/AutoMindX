@@ -1,7 +1,7 @@
 package com.automindx.modelo;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,9 +17,8 @@ public class AutomataNoDeterminista {
     private Estado estadoInicial;
 
     public AutomataNoDeterminista() {
-
         estados = new ArrayList<>();
-        alfabeto = new HashSet<>();
+        alfabeto = new LinkedHashSet<>();
         transiciones = new ArrayList<>();
         estadosFinales = new ArrayList<>();
     }
@@ -68,13 +67,11 @@ public class AutomataNoDeterminista {
         if (transicion == null
                 || transicion.getOrigen() == null
                 || transicion.getDestino() == null) {
-
             return;
         }
 
         if (!estados.contains(transicion.getOrigen())
                 || !estados.contains(transicion.getDestino())) {
-
             return;
         }
 
@@ -127,7 +124,11 @@ public class AutomataNoDeterminista {
             char simbolo) {
 
         Set<Estado> destinos =
-                new HashSet<>();
+                new LinkedHashSet<>();
+
+        if (origen == null) {
+            return destinos;
+        }
 
         for (Transicion transicion :
                 obtenerTransiciones(origen, simbolo)) {
@@ -144,7 +145,7 @@ public class AutomataNoDeterminista {
             Estado estado) {
 
         Set<Estado> clausura =
-                new HashSet<>();
+                new LinkedHashSet<>();
 
         if (estado == null) {
             return clausura;
@@ -159,7 +160,7 @@ public class AutomataNoDeterminista {
             huboCambios = false;
 
             Set<Estado> nuevosEstados =
-                    new HashSet<>();
+                    new LinkedHashSet<>();
 
             for (Estado actual : clausura) {
 
@@ -183,7 +184,7 @@ public class AutomataNoDeterminista {
             Set<Estado> conjunto) {
 
         Set<Estado> clausura =
-                new HashSet<>();
+                new LinkedHashSet<>();
 
         if (conjunto == null) {
             return clausura;
@@ -224,7 +225,6 @@ public class AutomataNoDeterminista {
 
         if (estado == null
                 || !estados.contains(estado)) {
-
             return;
         }
 
@@ -249,7 +249,8 @@ public class AutomataNoDeterminista {
     public boolean esEstadoFinal(
             Estado estado) {
 
-        return estadosFinales.contains(estado);
+        return estado != null
+                && estadosFinales.contains(estado);
     }
 
     public boolean contieneEstadoFinal(
@@ -273,8 +274,7 @@ public class AutomataNoDeterminista {
 
         alfabeto.clear();
 
-        for (Transicion transicion :
-                transiciones) {
+        for (Transicion transicion : transiciones) {
 
             agregarSimbolo(
                     transicion.getSimbolo()
