@@ -11,39 +11,28 @@ import javax.swing.UIManager;
 public class Main {
 
     public static void main(String[] args) {
-
         aplicarApariencia();
 
-        ControladorAutomata controladorDFA =
-                new ControladorAutomata();
-
-        ControladorNoDeterminista controladorAFND =
-                new ControladorNoDeterminista();
-
         SwingUtilities.invokeLater(() -> {
+            ControladorAutomata controladorDFA =
+                    new ControladorAutomata();
 
-            VentanaPrincipal ventana =
-                    new VentanaPrincipal(
-                            controladorDFA,
-                            controladorAFND
-                    );
+            ControladorNoDeterminista controladorAFND =
+                    new ControladorNoDeterminista();
 
-            ventana.setVisible(true);
+            new VentanaPrincipal(
+                    controladorDFA,
+                    controladorAFND
+            );
         });
     }
 
     private static void aplicarApariencia() {
-
         try {
-            UIManager.setLookAndFeel(
-                    new FlatLightLaf()
-            );
-
+            UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
-
             System.err.println(
-                    "No se pudo aplicar FlatLaf: "
-                            + e.getMessage()
+                    "No se pudo aplicar FlatLaf: " + e.getMessage()
             );
         }
     }
