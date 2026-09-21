@@ -5,30 +5,24 @@ import com.automindx.modelo.AutomataNoDeterminista;
 import com.automindx.modelo.ConversorAFNDAFD;
 import com.automindx.modelo.Estado;
 import com.automindx.modelo.Transicion;
+import com.automindx.modelo.ValidadorAFND;
 
 public class ControladorNoDeterminista {
 
     private final AutomataNoDeterminista afnd;
+    private final ValidadorAFND validador;
+
     private ConversorAFNDAFD.ResultadoConversion resultadoConversion;
 
     public ControladorNoDeterminista() {
         afnd = new AutomataNoDeterminista();
+        validador = new ValidadorAFND(afnd);
     }
 
     public Estado crearEstado(int x, int y) {
-
         String nombre = generarNombreEstado();
-
-        Estado estado = new Estado(
-                nombre,
-                false,
-                false,
-                x,
-                y
-        );
-
+        Estado estado = new Estado(nombre, false, false, x, y);
         afnd.agregarEstado(estado);
-
         return estado;
     }
 
@@ -49,11 +43,8 @@ public class ControladorNoDeterminista {
             return false;
         }
 
-        Transicion transicion = new Transicion(
-                origen,
-                destino,
-                simbolo
-        );
+        Transicion transicion =
+                new Transicion(origen, destino, simbolo);
 
         int cantidadAnterior =
                 afnd.getTransiciones().size();
@@ -64,21 +55,19 @@ public class ControladorNoDeterminista {
                 > cantidadAnterior;
     }
 
-    public void eliminarTransicion(
-            Transicion transicion) {
-
+    public void eliminarTransicion(Transicion transicion) {
         afnd.eliminarTransicion(transicion);
     }
 
-    public void establecerEstadoInicial(
-            Estado estado) {
-
+    public void establecerEstadoInicial(Estado estado) {
         afnd.establecerEstadoInicial(estado);
     }
 
-    public void alternarEstadoFinal(
-            Estado estado) {
+    public void quitarEstadoInicial() {
+        afnd.establecerEstadoInicial(null);
+    }
 
+    public void alternarEstadoFinal(Estado estado) {
         if (afnd.esEstadoFinal(estado)) {
             afnd.quitarEstadoFinal(estado);
         } else {
@@ -86,46 +75,60 @@ public class ControladorNoDeterminista {
         }
     }
 
-    public void agregarEstadoFinal(
-            Estado estado) {
-
+    public void agregarEstadoFinal(Estado estado) {
         afnd.agregarEstadoFinal(estado);
     }
 
-    public void quitarEstadoFinal(
-            Estado estado) {
-
+    public void quitarEstadoFinal(Estado estado) {
         afnd.quitarEstadoFinal(estado);
     }
 
-    public void limpiar() {
-
-        afnd.limpiar();
-        resultadoConversion = null;
+    public ValidadorAFND.Resultado validarCadena(String cadena) {
+        return validador.validarDetallado(cadena);
     }
 
-    public ConversorAFNDAFD.ResultadoConversion convertirAFDaFD() {
+    public boolean aceptarCadena(String cadena) {
+        return validador.validar(cadena);
+    }
 
+    public ValidadorAFND getValidador() {
+        return validador;
+    }
+
+    public void convertirAFDaFD() {
         ConversorAFNDAFD conversor =
                 new ConversorAFNDAFD(afnd);
 
-        resultadoConversion =
-                conversor.convertir();
+        resultadoConversion = conversor.convertir();
+    }
+
+    public Automata getAFDConvertido() {
+        if (resultadoConversion == null) {
+            return null;
+        }
+
+        return resultadoConversion.getAfd();
+    }
+
+    public ConversorAFNDAFD.ResultadoConversion
+            getResultadoConversion() {
 
         return resultadoConversion;
     }
 
-    private String generarNombreEstado() {
+    public void limpiar() {
+        afnd.limpiar();
+        resultadoConversion = null;
+    }
 
+    private String generarNombreEstado() {
         int numero = 0;
 
         while (true) {
-
             String nombre = "q" + numero;
             boolean existe = false;
 
             for (Estado estado : afnd.getEstados()) {
-
                 if (nombre.equals(estado.getNombre())) {
                     existe = true;
                     break;
@@ -142,20 +145,5 @@ public class ControladorNoDeterminista {
 
     public AutomataNoDeterminista getAFND() {
         return afnd;
-    }
-
-    public Automata getAFDConvertido() {
-
-        if (resultadoConversion == null) {
-            return null;
-        }
-
-        return resultadoConversion.getAfd();
-    }
-
-    public ConversorAFNDAFD.ResultadoConversion
-            getResultadoConversion() {
-
-        return resultadoConversion;
     }
 }
