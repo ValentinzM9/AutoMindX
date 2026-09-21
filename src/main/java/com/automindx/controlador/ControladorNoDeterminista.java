@@ -5,18 +5,14 @@ import com.automindx.modelo.AutomataNoDeterminista;
 import com.automindx.modelo.ConversorAFNDAFD;
 import com.automindx.modelo.Estado;
 import com.automindx.modelo.Transicion;
-import com.automindx.modelo.ValidadorAFND;
 
 public class ControladorNoDeterminista {
 
     private final AutomataNoDeterminista afnd;
-    private final ValidadorAFND validador;
-
     private ConversorAFNDAFD.ResultadoConversion resultadoConversion;
 
     public ControladorNoDeterminista() {
         afnd = new AutomataNoDeterminista();
-        validador = new ValidadorAFND(afnd);
     }
 
     public Estado crearEstado(int x, int y) {
@@ -39,9 +35,7 @@ public class ControladorNoDeterminista {
             Estado destino,
             char simbolo) {
 
-        if (origen == null || destino == null) {
-            return false;
-        }
+        if (origen == null || destino == null) return false;
 
         Transicion transicion =
                 new Transicion(origen, destino, simbolo);
@@ -51,8 +45,7 @@ public class ControladorNoDeterminista {
 
         afnd.agregarTransicion(transicion);
 
-        return afnd.getTransiciones().size()
-                > cantidadAnterior;
+        return afnd.getTransiciones().size() > cantidadAnterior;
     }
 
     public void eliminarTransicion(Transicion transicion) {
@@ -83,18 +76,6 @@ public class ControladorNoDeterminista {
         afnd.quitarEstadoFinal(estado);
     }
 
-    public ValidadorAFND.Resultado validarCadena(String cadena) {
-        return validador.validarDetallado(cadena);
-    }
-
-    public boolean aceptarCadena(String cadena) {
-        return validador.validar(cadena);
-    }
-
-    public ValidadorAFND getValidador() {
-        return validador;
-    }
-
     public void convertirAFDaFD() {
         ConversorAFNDAFD conversor =
                 new ConversorAFNDAFD(afnd);
@@ -103,10 +84,7 @@ public class ControladorNoDeterminista {
     }
 
     public Automata getAFDConvertido() {
-        if (resultadoConversion == null) {
-            return null;
-        }
-
+        if (resultadoConversion == null) return null;
         return resultadoConversion.getAfd();
     }
 
@@ -119,6 +97,10 @@ public class ControladorNoDeterminista {
     public void limpiar() {
         afnd.limpiar();
         resultadoConversion = null;
+    }
+
+    public AutomataNoDeterminista getAFND() {
+        return afnd;
     }
 
     private String generarNombreEstado() {
@@ -135,15 +117,8 @@ public class ControladorNoDeterminista {
                 }
             }
 
-            if (!existe) {
-                return nombre;
-            }
-
+            if (!existe) return nombre;
             numero++;
         }
-    }
-
-    public AutomataNoDeterminista getAFND() {
-        return afnd;
     }
 }
