@@ -7,8 +7,10 @@ import com.automindx.modelo.Transicion;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.Map;
 import java.util.Set;
 
 public class PanelConversion extends JPanel {
@@ -20,16 +22,17 @@ public class PanelConversion extends JPanel {
     private static final Color MORADO_CLARO = new Color(235, 228, 245);
     private static final Color FONDO = new Color(248, 247, 252);
     private static final Color TEXTO = new Color(55, 48, 65);
+    private static final Color LINEA = new Color(220, 215, 228);
 
     public PanelConversion(ControladorNoDeterminista controlador) {
         this.controlador = controlador;
 
-        setLayout(new BorderLayout(8, 8));
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(5, 5));
+        setBorder(new EmptyBorder(6, 6, 6, 6));
         setBackground(Color.WHITE);
 
-        JLabel titulo = new JLabel("Conversión AFND → AFD");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        JLabel titulo = new JLabel("Conversión AFND -> AFD");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
         titulo.setForeground(MORADO);
         add(titulo, BorderLayout.NORTH);
 
@@ -38,22 +41,20 @@ public class PanelConversion extends JPanel {
         contenido.setBackground(Color.WHITE);
 
         JScrollPane scroll = new JScrollPane(contenido);
-        scroll.setBorder(BorderFactory.createLineBorder(MORADO_CLARO));
+        scroll.setBorder(BorderFactory.createLineBorder(LINEA));
+        scroll.getVerticalScrollBar().setUnitIncrement(10);
         add(scroll, BorderLayout.CENTER);
 
-        JButton botonMostrar = new JButton("Actualizar conversión");
-        botonMostrar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        botonMostrar.setFocusPainted(false);
-        botonMostrar.setBackground(MORADO_CLARO);
-        botonMostrar.setForeground(TEXTO);
-        botonMostrar.setBorder(new EmptyBorder(6, 12, 6, 12));
-        botonMostrar.addActionListener(e -> mostrarConversion());
+        JButton actualizar = new JButton("Actualizar");
+        actualizar.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        actualizar.setFocusPainted(false);
+        actualizar.setPreferredSize(new Dimension(85, 24));
+        actualizar.addActionListener(e -> mostrarConversion());
 
-        JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        panelBoton.setBackground(Color.WHITE);
-        panelBoton.add(botonMostrar);
-
-        add(panelBoton, BorderLayout.SOUTH);
+        JPanel pie = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 2));
+        pie.setBackground(Color.WHITE);
+        pie.add(actualizar);
+        add(pie, BorderLayout.SOUTH);
 
         mostrarConversion();
     }
@@ -66,60 +67,52 @@ public class PanelConversion extends JPanel {
 
         if (resultado == null) {
             JLabel mensaje = new JLabel(
-                    "Todavía no se ha realizado ninguna conversión."
+                    "No se ha realizado ninguna conversión."
             );
-            mensaje.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+            mensaje.setFont(new Font("Segoe UI", Font.PLAIN, 11));
             mensaje.setForeground(Color.GRAY);
-            mensaje.setBorder(new EmptyBorder(15, 10, 15, 10));
-
             contenido.add(mensaje);
             actualizarVista();
             return;
         }
 
-        contenido.add(crearTituloSeccion("Estados del AFD generado"));
-        contenido.add(crearTablaEstados(resultado));
+        agregarSeccion("Estados generados",
+                crearTablaEstados(resultado));
 
-        contenido.add(Box.createVerticalStrut(12));
+        agregarSeccion("Transiciones del AFD",
+                crearTablaTransiciones(resultado));
 
-        contenido.add(crearTituloSeccion("Transiciones del AFD"));
-        contenido.add(crearTablaTransiciones(resultado));
-
-        contenido.add(Box.createVerticalStrut(12));
-
-        contenido.add(crearTituloSeccion("Proceso de conversión"));
-        contenido.add(crearTablaPasos(resultado));
+        agregarSeccion("Proceso de conversión",
+                crearTablaPasos(resultado));
 
         actualizarVista();
     }
 
-    private JLabel crearTituloSeccion(String texto) {
-        JLabel titulo = new JLabel(texto);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        titulo.setForeground(TEXTO);
-        titulo.setBorder(new EmptyBorder(6, 6, 6, 6));
-        return titulo;
+    private void agregarSeccion(String titulo, JTable tabla) {
+        JLabel etiqueta = new JLabel(titulo);
+        etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        etiqueta.setForeground(TEXTO);
+        etiqueta.setOpaque(true);
+        etiqueta.setBackground(FONDO);
+        etiqueta.setBorder(new EmptyBorder(4, 6, 4, 6));
+
+        contenido.add(etiqueta);
+        contenido.add(tabla);
+        contenido.add(Box.createVerticalStrut(5));
     }
 
     private JTable crearTablaEstados(
             ConversorAFNDAFD.ResultadoConversion resultado) {
 
-        String[] columnas = {"Estado", "Conjunto", "Tipo"};
+        DefaultTableModel modelo = crearModelo(
+                "Estado", "Conjunto", "Tipo"
+        );
 
-        DefaultTableModel modelo =
-                new DefaultTableModel(columnas, 0) {
-                    @Override
-                    public boolean isCellEditable(int fila, int columna) {
-                        return false;
-                    }
-                };
+        for (Map.Entry<Set<Estado>, Estado> entrada :
+                resultado.getCorrespondencia().entrySet()) {
 
-        for (Estado estado : resultado.getAfd().getEstados()) {
-            String tipo = "";
-
-            if (estado.isInicial()) {
-                tipo = "Inicial";
-            }
+            Estado estado = entrada.getValue();
+            String tipo = estado.isInicial() ? "Inicial" : "";
 
             if (estado.isEstadoFinal()) {
                 tipo += tipo.isEmpty() ? "Final" : " / Final";
@@ -127,7 +120,7 @@ public class PanelConversion extends JPanel {
 
             modelo.addRow(new Object[]{
                     estado.getNombre(),
-                    obtenerConjuntoEstado(estado, resultado),
+                    conjuntoTexto(entrada.getKey()),
                     tipo
             });
         }
@@ -135,49 +128,18 @@ public class PanelConversion extends JPanel {
         return prepararTabla(new JTable(modelo));
     }
 
-    private String obtenerConjuntoEstado(
-            Estado estado,
-            ConversorAFNDAFD.ResultadoConversion resultado) {
-
-        for (ConversorAFNDAFD.PasoConversion paso :
-                resultado.getPasos()) {
-
-            if (paso.getEstadoOrigenAFD().equals(estado)) {
-                return conjuntoTexto(paso.getConjuntoOrigen());
-            }
-        }
-
-        for (ConversorAFNDAFD.PasoConversion paso :
-                resultado.getPasos()) {
-
-            if (paso.getEstadoDestinoAFD().equals(estado)) {
-                return conjuntoTexto(paso.getConjuntoDestino());
-            }
-        }
-
-        return "∅";
-    }
-
     private JTable crearTablaTransiciones(
             ConversorAFNDAFD.ResultadoConversion resultado) {
 
-        String[] columnas = {"Origen", "Símbolo", "Destino"};
+        DefaultTableModel modelo = crearModelo(
+                "Origen", "Símbolo", "Destino"
+        );
 
-        DefaultTableModel modelo =
-                new DefaultTableModel(columnas, 0) {
-                    @Override
-                    public boolean isCellEditable(int fila, int columna) {
-                        return false;
-                    }
-                };
-
-        for (Transicion transicion :
-                resultado.getAfd().getTransiciones()) {
-
+        for (Transicion t : resultado.getAfd().getTransiciones()) {
             modelo.addRow(new Object[]{
-                    transicion.getOrigen().getNombre(),
-                    transicion.getSimbolo(),
-                    transicion.getDestino().getNombre()
+                    t.getOrigen().getNombre(),
+                    simboloTexto(t.getSimbolo()),
+                    t.getDestino().getNombre()
             });
         }
 
@@ -187,18 +149,9 @@ public class PanelConversion extends JPanel {
     private JTable crearTablaPasos(
             ConversorAFNDAFD.ResultadoConversion resultado) {
 
-        String[] columnas = {
-                "#", "Conjunto origen", "Símbolo",
-                "Conjunto destino", "Transición"
-        };
-
-        DefaultTableModel modelo =
-                new DefaultTableModel(columnas, 0) {
-                    @Override
-                    public boolean isCellEditable(int fila, int columna) {
-                        return false;
-                    }
-                };
+        DefaultTableModel modelo = crearModelo(
+                "#", "Origen", "Símbolo", "Destino", "Transición"
+        );
 
         int numero = 1;
 
@@ -208,10 +161,10 @@ public class PanelConversion extends JPanel {
             modelo.addRow(new Object[]{
                     numero++,
                     conjuntoTexto(paso.getConjuntoOrigen()),
-                    paso.getSimbolo(),
+                    simboloTexto(paso.getSimbolo()),
                     conjuntoTexto(paso.getConjuntoDestino()),
-                        paso.getEstadoOrigenAFD()
-                            + " → "
+                    paso.getEstadoOrigenAFD()
+                            + " -> "
                             + paso.getEstadoDestinoAFD()
             });
         }
@@ -219,40 +172,70 @@ public class PanelConversion extends JPanel {
         return prepararTabla(new JTable(modelo));
     }
 
+    private DefaultTableModel crearModelo(String... columnas) {
+        return new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+    }
+
     private JTable prepararTabla(JTable tabla) {
-        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        tabla.setRowHeight(24);
+        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        tabla.setRowHeight(20);
+        tabla.setShowGrid(true);
+        tabla.setGridColor(LINEA);
+        tabla.setIntercellSpacing(new Dimension(1, 1));
+        tabla.setFillsViewportHeight(true);
+        tabla.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
         tabla.getTableHeader().setFont(
-                new Font("Segoe UI", Font.BOLD, 11)
+                new Font("Segoe UI", Font.BOLD, 10)
         );
         tabla.getTableHeader().setBackground(MORADO_CLARO);
         tabla.getTableHeader().setForeground(TEXTO);
-        tabla.setGridColor(new Color(225, 220, 232));
-        tabla.setFillsViewportHeight(true);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabla.getTableHeader().setReorderingAllowed(false);
+
+        DefaultTableCellRenderer centrado =
+                new DefaultTableCellRenderer();
+
+        centrado.setHorizontalAlignment(
+                SwingConstants.CENTER
+        );
+
+        for (int i = 0; i < tabla.getColumnCount(); i++) {
+            tabla.getColumnModel()
+                    .getColumn(i)
+                    .setCellRenderer(centrado);
+        }
 
         return tabla;
     }
 
     private String conjuntoTexto(Set<Estado> conjunto) {
-        if (conjunto.isEmpty()) {
-            return "∅";
+        if (conjunto == null || conjunto.isEmpty()) {
+            return "VACÍO";
         }
 
         StringBuilder texto = new StringBuilder("{");
 
-        boolean primero = true;
-
         for (Estado estado : conjunto) {
-            if (!primero) {
-                texto.append(", ");
+            if (texto.length() > 1) {
+                texto.append(",");
             }
-
             texto.append(estado.getNombre());
-            primero = false;
         }
 
         return texto.append("}").toString();
+    }
+
+    private String simboloTexto(char simbolo) {
+        return simbolo == 'ε' || simbolo == 'e'
+                ? "EPS"
+                : String.valueOf(simbolo);
     }
 
     private void actualizarVista() {
