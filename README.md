@@ -3,15 +3,12 @@
 <br>
 
 [![Java](https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk)](#)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap)](#)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5)](#)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3)](#)
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-green)](LICENSE)
 [![Estado](https://img.shields.io/badge/Estado-Activo-brightgreen)](#)
 
 > **Proyecto académico – Teoría de Autómatas y Lenguajes Formales**  
-> *Simulador de autómatas finitos deterministas (DFA) con editor visual*  
-> *Arquitectura cliente-servidor con patrón MVC*  
+> *Simulador de autómatas finitos deterministas y No determinista (DFA) (DFNA) con editor visual*  
+> *Patrón MVC*  
 > *Universidad El Bosque - Compiladores*
 
 ---
@@ -21,7 +18,7 @@
 **AutoMindX** es una aplicación que permite **diseñar, visualizar y simular autómatas finitos deterministas (DFA)** de manera interactiva.  
 El usuario puede **dibujar el grafo** directamente en un lienzo, definir el alfabeto, ingresar una cadena y **observar paso a paso el proceso de validación con colores dinámicos**, resaltando el estado inicial, la trayectoria recorrida y el resultado final (aceptada o rechazada).
 
-La interfaz de usuario (vista) está construida con **HTML, CSS y Bootstrap 5**, que adapta el aplicativo al dispositivo del usuario. La lógica del autómata y la validación de cadenas están implementadas en **Java**, separadas claramente siguiendo el patrón **Modelo-Vista-Controlador (MVC)**.
+Tambien se presenta el proceso de conversion y validacion entre un automata No determinista, y su transformación a determinista, el proceso entre las cadenas nuevas, asi como tambien una interfaz intuitiva donde se dibuja el automata y sus estados a transfromar.
 
 El dibujo del grafo se realiza sobre un lienzo que utiliza **Java2D** para la representación gráfica, evitando dependencias externas para el pintado.
 
@@ -32,15 +29,12 @@ El dibujo del grafo se realiza sobre un lienzo que utiliza **Java2D** para la re
 | Característica | Descripción |
 |:---|:---|
 | **Editor visual integrado** | Dibuja estados (círculos) y transiciones (flechas) con el ratón, estilo Paint. |
-| **Interfaz moderna con Bootstrap** | Diseño responsivo y atractivo utilizando componentes y estilos de Bootstrap 5. |
 | **Definición de alfabeto** | Permite especificar los símbolos aceptados por el autómata. |
 | **Ingreso de cadena** | Campo para escribir la cadena que se desea validar. |
 | **Validación dinámica** | Muestra con colores el proceso de recorrido: estado inicial, trayectoria y resultado final. |
 | **Resaltado de trayectoria** | La ruta seguida se ilumina con un color distintivo durante la simulación. |
 | **Estado inicial identificado** | El estado inicial se marca visualmente (por ejemplo, con una flecha entrante o color especial). |
 | **Aceptación o rechazo visual** | Al finalizar, el autómata indica claramente si la cadena fue aceptada o rechazada, con colores representativos. |
-| **Exportar/Importar** | Guarda y carga autómatas en formato JSON (opcional). |
-| **dependencias externas para dibujo** | Solo Java estándar para el motor gráfico, sin bibliotecas adicionales. |
 
 ---
 
@@ -72,10 +66,10 @@ AutoMindX no se limita a un simple "sí/no": ofrece una **experiencia visual int
 
 ## Arquitectura del sistema
 
-AutoMindX sigue una **arquitectura cliente-servidor** lógica, donde el cliente (vista web) se comunica con el servidor (lógica de negocio Java) a través del controlador. Se implementa el patrón **Modelo-Vista-Controlador (MVC)**:
+AutoMindX sigue una **arquitectura cliente-servidor** lógica, donde el cliente se comunica con el servidor (lógica de negocio Java) a través del controlador. Se implementa el patrón **Modelo-Vista-Controlador (MVC)**:
 
 - **Modelo**: Contiene la definición del autómata (estados, transiciones, alfabeto) y la lógica de validación de cadenas. Implementado en Java.
-- **Vista**: Interfaz gráfica web construida con **HTML, CSS y Bootstrap 5**. Incluye el lienzo para dibujar el grafo y los paneles de control entre las funciones del usuario. 
+- **Vista**: Interfaz gráfica de Java. Incluye el lienzo para dibujar el grafo y los paneles de control entre las funciones del usuario. 
 - **Controlador**: Maneja los eventos del usuario y coordina las acciones entre la vista y el modelo.
 ---
 
@@ -89,13 +83,6 @@ AutoMindX/
 │   │   │   ├── modelo/          → Clases del modelo: Estado, Transicion, Automata, Validador
 │   │   │   ├── controlador/     → Clases controladoras: ControladorEditor, ControladorSimulacion
 │   │   │   ├── servicio/        → Lógica de negocio y comunicación con la vista
-│   │   │   └── Main.java        → Punto de entrada 
-│   │   └── resources/           → Recursos (iconos, fuentes)
-├── web/
-│   ├── css/                     → Estilos personalizados y Bootstrap
-│   ├── js/                      → Lógica de interacción en el cliente
-│   └── index.html               → Página principal de la vista
-├── test/                        → Pruebas unitarias
-├── docs/                        → Documentación y capturas
-├── LICENSE
+│   │   └── Main.java            → Punto de entrada 
+│   │   
 └── README.md
