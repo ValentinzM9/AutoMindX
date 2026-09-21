@@ -1,6 +1,7 @@
 package com.automindx;
 
 import com.automindx.controlador.ControladorAutomata;
+import com.automindx.controlador.ControladorNoDeterminista;
 import com.automindx.vista.VentanaPrincipal;
 import com.formdev.flatlaf.FlatLightLaf;
 
@@ -13,12 +14,19 @@ public class Main {
 
         aplicarApariencia();
 
-        ControladorAutomata controlador = new ControladorAutomata();
+        ControladorAutomata controladorDFA =
+                new ControladorAutomata();
+
+        ControladorNoDeterminista controladorAFND =
+                new ControladorNoDeterminista();
 
         SwingUtilities.invokeLater(() -> {
 
             VentanaPrincipal ventana =
-                    new VentanaPrincipal(controlador);
+                    new VentanaPrincipal(
+                            controladorDFA,
+                            controladorAFND
+                    );
 
             ventana.setVisible(true);
         });
@@ -27,8 +35,12 @@ public class Main {
     private static void aplicarApariencia() {
 
         try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
+            UIManager.setLookAndFeel(
+                    new FlatLightLaf()
+            );
+
         } catch (Exception e) {
+
             System.err.println(
                     "No se pudo aplicar FlatLaf: "
                             + e.getMessage()

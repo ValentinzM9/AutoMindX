@@ -1,14 +1,11 @@
 package com.automindx.vista;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
+import com.automindx.controlador.ControladorAutomata;
+import com.automindx.controlador.ControladorNoDeterminista;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,31 +14,54 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.automindx.controlador.ControladorAutomata;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 
 public class VentanaPrincipal extends JFrame {
 
-    private final ControladorAutomata controlador;
+    private final ControladorAutomata controladorDFA;
+    private final ControladorNoDeterminista controladorAFND;
 
     private PanelAutomata panelAutomata;
     private PanelControles panelControles;
+    private PanelAFND panelAFND;
 
+    private JPanel panelCentro;
     private JPanel panelSuperior;
     private JPanel panelInferior;
 
-    private JLabel etiquetaTitulo;
     private JLabel etiquetaEstado;
+    private JLabel etiquetaModo;
 
+    private JComboBox<String> selectorModo;
     private JButton botonLimpiar;
     private JButton botonSalir;
 
-    private static final Color COLOR_ACENTO =
-        new Color(142, 68, 173);
+    private static final Color FONDO =
+            new Color(248, 247, 252);
+
+    private static final Color MORADO =
+            new Color(106, 76, 147);
+
+    private static final Color MORADO_CLARO =
+            new Color(235, 228, 245);
+
+    private static final Color TEXTO =
+            new Color(55, 48, 65);
+
+    private static final Color GRIS =
+            new Color(110, 105, 118);
 
     public VentanaPrincipal(
-            ControladorAutomata controlador) {
+            ControladorAutomata controladorDFA,
+            ControladorNoDeterminista controladorAFND) {
 
-        this.controlador = controlador;
+        this.controladorDFA = controladorDFA;
+        this.controladorAFND = controladorAFND;
 
         configurarVentana();
         crearComponentes();
@@ -51,19 +71,13 @@ public class VentanaPrincipal extends JFrame {
     private void configurarVentana() {
 
         setTitle(
-                "AutoMindX - Simulador de Autómatas Finitos"
+                "AutoMindX | Simulador de Autómatas Finitos"
         );
 
-        setSize(
-                1200,
-                750
-        );
+        setSize(1200, 750);
 
         setMinimumSize(
-                new Dimension(
-                        1000,
-                        650
-                )
+                new Dimension(1000, 650)
         );
 
         setLocationRelativeTo(null);
@@ -73,19 +87,13 @@ public class VentanaPrincipal extends JFrame {
         );
 
         setLayout(
-                new BorderLayout(
-                        10,
-                        10
-                )
+                new BorderLayout(12, 12)
         );
 
+        getContentPane().setBackground(FONDO);
+
         getRootPane().setBorder(
-                new EmptyBorder(
-                        10,
-                        10,
-                        10,
-                        10
-                )
+                new EmptyBorder(12, 12, 12, 12)
         );
     }
 
@@ -94,37 +102,51 @@ public class VentanaPrincipal extends JFrame {
         crearPanelSuperior();
 
         panelAutomata =
-                new PanelAutomata(
-                        controlador
-                );
+                new PanelAutomata(controladorDFA);
+
+        panelAutomata.setBackground(Color.WHITE);
 
         panelAutomata.setBorder(
                 BorderFactory.createTitledBorder(
-                        "Área de diseño del autómata"
+                        BorderFactory.createLineBorder(
+                                new Color(224, 218, 232)
+                        ),
+                        "Editor visual del DFA"
                 )
         );
 
         panelControles =
                 new PanelControles(
-                        controlador,
+                        controladorDFA,
                         panelAutomata
                 );
 
         panelControles.setPreferredSize(
-                new Dimension(
-                        260,
-                        0
+                new Dimension(270, 0)
+        );
+
+        panelAFND =
+                new PanelAFND(controladorAFND);
+
+        panelAFND.setBackground(Color.WHITE);
+
+        panelAFND.setBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(224, 218, 232)
+                        ),
+                        "Editor visual del AFND"
                 )
         );
 
-        JScrollPane scrollAutomata =
-                new JScrollPane(
-                        panelAutomata
+        panelCentro =
+                new JPanel(
+                        new BorderLayout(12, 0)
                 );
 
-        scrollAutomata.setBorder(
-                BorderFactory.createEmptyBorder()
-        );
+        panelCentro.setOpaque(false);
+
+        mostrarModoDFA();
 
         add(
                 panelSuperior,
@@ -132,13 +154,8 @@ public class VentanaPrincipal extends JFrame {
         );
 
         add(
-                scrollAutomata,
+                panelCentro,
                 BorderLayout.CENTER
-        );
-
-        add(
-                panelControles,
-                BorderLayout.EAST
         );
 
         crearPanelInferior();
@@ -153,47 +170,48 @@ public class VentanaPrincipal extends JFrame {
 
         panelSuperior =
                 new JPanel(
-                        new BorderLayout()
+                        new BorderLayout(20, 0)
                 );
+
+        panelSuperior.setBackground(Color.WHITE);
 
         panelSuperior.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(
-                                0,
-                                0,
-                                1,
-                                0,
-                                Color.LIGHT_GRAY
+                        BorderFactory.createLineBorder(
+                                new Color(226, 220, 235)
                         ),
                         new EmptyBorder(
-                                5,
-                                5,
-                                10,
-                                5
+                                15,
+                                18,
+                                15,
+                                18
                         )
                 )
         );
 
-        etiquetaTitulo =
-                new JLabel(
-                        "AutoMindX"
+        JPanel informacion =
+                new JPanel(
+                        new GridLayout(2, 1)
                 );
 
-        etiquetaTitulo.setFont(
+        informacion.setOpaque(false);
+
+        JLabel titulo =
+                new JLabel("AutoMindX");
+
+        titulo.setFont(
                 new Font(
                         "Segoe UI",
                         Font.BOLD,
-                        24
+                        28
                 )
         );
 
-        etiquetaTitulo.setForeground(
-                COLOR_ACENTO
-        );
+        titulo.setForeground(MORADO);
 
         JLabel subtitulo =
                 new JLabel(
-                        "Simulador visual de autómatas finitos deterministas"
+                        "Explora, construye y valida autómatas finitos"
                 );
 
         subtitulo.setFont(
@@ -204,29 +222,69 @@ public class VentanaPrincipal extends JFrame {
                 )
         );
 
-        subtitulo.setForeground(
-                Color.GRAY
-        );
+        subtitulo.setForeground(GRIS);
 
-        JPanel informacion =
+        informacion.add(titulo);
+        informacion.add(subtitulo);
+
+        JPanel selectorPanel =
                 new JPanel(
-                        new GridLayout(
-                                2,
-                                1
+                        new FlowLayout(
+                                FlowLayout.RIGHT,
+                                8,
+                                8
                         )
                 );
 
-        informacion.add(
-                etiquetaTitulo
+        selectorPanel.setOpaque(false);
+
+        etiquetaModo =
+                new JLabel("Modo:");
+
+        etiquetaModo.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        13
+                )
         );
 
-        informacion.add(
-                subtitulo
+        etiquetaModo.setForeground(TEXTO);
+
+        selectorModo =
+                new JComboBox<>(
+                        new String[]{
+                                "Autómata determinista (DFA)",
+                                "Autómata no determinista (AFND)"
+                        }
+                );
+
+        selectorModo.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
         );
+
+        selectorModo.setPreferredSize(
+                new Dimension(235, 32)
+        );
+
+        selectorModo.setBackground(MORADO_CLARO);
+        selectorModo.setForeground(TEXTO);
+
+        selectorPanel.add(etiquetaModo);
+        selectorPanel.add(selectorModo);
 
         panelSuperior.add(
                 informacion,
                 BorderLayout.WEST
+        );
+
+        panelSuperior.add(
+                selectorPanel,
+                BorderLayout.EAST
         );
     }
 
@@ -234,62 +292,67 @@ public class VentanaPrincipal extends JFrame {
 
         panelInferior =
                 new JPanel(
-                        new BorderLayout()
+                        new BorderLayout(12, 0)
                 );
+
+        panelInferior.setBackground(Color.WHITE);
 
         panelInferior.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(
-                                1,
-                                0,
-                                0,
-                                0,
-                                Color.LIGHT_GRAY
+                        BorderFactory.createLineBorder(
+                                new Color(226, 220, 235)
                         ),
                         new EmptyBorder(
                                 8,
-                                5,
-                                5,
-                                5
+                                12,
+                                8,
+                                12
                         )
                 )
         );
 
         etiquetaEstado =
                 new JLabel(
-                        "Listo para trabajar"
+                        "●  Listo para trabajar"
                 );
 
-        etiquetaEstado.setHorizontalAlignment(
-                SwingConstants.LEFT
+        etiquetaEstado.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        12
+                )
         );
 
+        etiquetaEstado.setForeground(GRIS);
+
         botonLimpiar =
-                new JButton(
-                        "LIMPIAR ÁREA"
+                crearBoton(
+                        "Limpiar área",
+                        MORADO_CLARO,
+                        MORADO
                 );
 
         botonSalir =
-                new JButton(
-                        "SALIR"
+                crearBoton(
+                        "Salir",
+                        new Color(248, 232, 235),
+                        new Color(156, 65, 83)
                 );
 
-        JPanel panelBotones =
+        JPanel botones =
                 new JPanel(
                         new FlowLayout(
                                 FlowLayout.RIGHT,
-                                5,
+                                8,
                                 0
                         )
                 );
 
-        panelBotones.add(
-                botonLimpiar
-        );
+        botones.setOpaque(false);
 
-        panelBotones.add(
-                botonSalir
-        );
+        botones.add(botonLimpiar);
+        botones.add(botonSalir);
 
         panelInferior.add(
                 etiquetaEstado,
@@ -304,33 +367,157 @@ public class VentanaPrincipal extends JFrame {
         );
 
         panelInferior.add(
-                panelBotones,
+                botones,
                 BorderLayout.EAST
         );
     }
 
+    private JButton crearBoton(
+            String texto,
+            Color fondo,
+            Color textoColor) {
+
+        JButton boton =
+                new JButton(texto);
+
+        boton.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        12
+                )
+        );
+
+        boton.setForeground(textoColor);
+        boton.setBackground(fondo);
+        boton.setFocusPainted(false);
+
+        boton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(225, 218, 232)
+                        ),
+                        new EmptyBorder(
+                                7,
+                                14,
+                                7,
+                                14
+                        )
+                )
+        );
+
+        boton.setCursor(
+                new java.awt.Cursor(
+                        java.awt.Cursor.HAND_CURSOR
+                )
+        );
+
+        return boton;
+    }
+
     private void configurarEventos() {
 
-        botonSalir.addActionListener(
-                e -> System.exit(0)
+        selectorModo.addActionListener(
+                e -> cambiarModo()
         );
 
         botonLimpiar.addActionListener(
                 e -> limpiarArea()
         );
+
+        botonSalir.addActionListener(
+                e -> System.exit(0)
+        );
+    }
+
+    private void cambiarModo() {
+
+        if (selectorModo.getSelectedIndex() == 0) {
+
+            mostrarModoDFA();
+
+            etiquetaEstado.setText(
+                    "●  Modo DFA seleccionado"
+            );
+
+        } else {
+
+            mostrarModoAFND();
+
+            etiquetaEstado.setText(
+                    "●  Modo AFND seleccionado"
+            );
+        }
+    }
+
+    private void mostrarModoDFA() {
+
+        panelCentro.removeAll();
+
+        JScrollPane scroll =
+                new JScrollPane(panelAutomata);
+
+        scroll.setBorder(
+                BorderFactory.createEmptyBorder()
+        );
+
+        panelCentro.add(
+                scroll,
+                BorderLayout.CENTER
+        );
+
+        panelCentro.add(
+                panelControles,
+                BorderLayout.EAST
+        );
+
+        panelCentro.revalidate();
+        panelCentro.repaint();
+    }
+
+    private void mostrarModoAFND() {
+
+        panelCentro.removeAll();
+
+        JScrollPane scroll =
+                new JScrollPane(panelAFND);
+
+        scroll.setBorder(
+                BorderFactory.createEmptyBorder()
+        );
+
+        panelCentro.add(
+                scroll,
+                BorderLayout.CENTER
+        );
+
+        panelCentro.revalidate();
+        panelCentro.repaint();
     }
 
     private void limpiarArea() {
 
-        controlador.limpiarAutomata();
+        if (selectorModo.getSelectedIndex() == 0) {
 
-        panelAutomata.limpiarResaltado();
-        panelAutomata.desactivarModosEdicion();
+            controladorDFA.limpiarAutomata();
 
-        etiquetaEstado.setText(
-                "Área de diseño limpiada"
-        );
+            panelAutomata.limpiarResaltado();
+            panelAutomata.desactivarModosEdicion();
+            panelAutomata.repaint();
 
-        panelAutomata.repaint();
+            etiquetaEstado.setText(
+                    "●  Área del DFA limpiada"
+            );
+
+        } else {
+
+            controladorAFND.limpiar();
+
+            panelAFND.repaint();
+
+            etiquetaEstado.setText(
+                    "●  Área del AFND limpiada"
+            );
+        }
     }
 }
