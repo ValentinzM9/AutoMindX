@@ -19,6 +19,10 @@ public class PanelAFND extends JPanel {
     private boolean modoCrearEstado, modoTransicion;
 
     private static final int RADIO = 30;
+    private static final Color MORADO = new Color(106, 76, 147);
+    private static final Color MORADO_CLARO = new Color(235, 228, 245);
+    private static final Color FONDO_ESTADO = new Color(247, 242, 252);
+    private static final Color BORDE_ESTADO = new Color(126, 91, 164);
 
     public PanelAFND(ControladorNoDeterminista controlador) {
         this.controlador = controlador;
@@ -33,6 +37,12 @@ public class PanelAFND extends JPanel {
             public void mousePressed(MouseEvent e) {
                 mouseX = e.getX();
                 mouseY = e.getY();
+
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    mostrarMenu(e);
+                    return;
+                }
+
                 Estado estado = buscarEstado(mouseX, mouseY);
 
                 if (modoCrearEstado) {
@@ -46,7 +56,8 @@ public class PanelAFND extends JPanel {
                 }
 
                 if (modoTransicion) {
-                    if (estado != null) estadoOrigenTransicion = estado;
+                    if (estado != null)
+                        estadoOrigenTransicion = estado;
                     repaint();
                     return;
                 }
@@ -155,6 +166,77 @@ public class PanelAFND extends JPanel {
         }
     }
 
+    private void mostrarMenu(MouseEvent e) {
+        Estado estado = buscarEstado(e.getX(), e.getY());
+
+        if (estado != null) {
+            menuEstado(estado).show(this, e.getX(), e.getY());
+            return;
+        }
+
+        Transicion transicion = buscarTransicion(e.getX(), e.getY());
+
+        if (transicion != null)
+            menuTransicion(transicion).show(this, e.getX(), e.getY());
+    }
+
+    private JPopupMenu menuEstado(Estado estado) {
+        JPopupMenu menu = new JPopupMenu();
+
+        JMenuItem inicial = new JMenuItem(
+                estado.isInicial()
+                        ? "Quitar estado inicial"
+                        : "Establecer como inicial"
+        );
+
+        JMenuItem finalItem = new JMenuItem(
+                estado.isEstadoFinal()
+                        ? "Quitar estado final"
+                        : "Establecer como final"
+        );
+
+        JMenuItem eliminar = new JMenuItem("Eliminar estado");
+
+        inicial.addActionListener(e -> {
+            if (estado.isInicial()) {
+                controlador.getAFND().establecerEstadoInicial(null);
+            } else {
+                controlador.establecerEstadoInicial(estado);
+            }
+            repaint();
+        });
+
+        finalItem.addActionListener(e -> {
+            controlador.alternarEstadoFinal(estado);
+            repaint();
+        });
+
+        eliminar.addActionListener(e -> {
+            controlador.eliminarEstado(estado);
+            repaint();
+        });
+
+        menu.add(inicial);
+        menu.add(finalItem);
+        menu.addSeparator();
+        menu.add(eliminar);
+
+        return menu;
+    }
+
+    private JPopupMenu menuTransicion(Transicion transicion) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem eliminar = new JMenuItem("Eliminar transición");
+
+        eliminar.addActionListener(e -> {
+            controlador.eliminarTransicion(transicion);
+            repaint();
+        });
+
+        menu.add(eliminar);
+        return menu;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -176,18 +258,24 @@ public class PanelAFND extends JPanel {
         for (Estado estado : controlador.getAFND().getEstados()) {
             int x = estado.getX(), y = estado.getY();
 
-            g2.setColor(Color.WHITE);
+            g2.setColor(FONDO_ESTADO);
             g2.fillOval(x - RADIO, y - RADIO, RADIO * 2, RADIO * 2);
 
-            g2.setColor(Color.BLACK);
+            g2.setColor(estado.isEstadoFinal() ? MORADO : BORDE_ESTADO);
             g2.setStroke(new BasicStroke(2));
             g2.drawOval(x - RADIO, y - RADIO, RADIO * 2, RADIO * 2);
 
-            if (estado.isEstadoFinal())
-                g2.drawOval(x - RADIO + 5, y - RADIO + 5,
-                        RADIO * 2 - 10, RADIO * 2 - 10);
+            if (estado.isEstadoFinal()) {
+                g2.drawOval(
+                        x - RADIO + 5, y - RADIO + 5,
+                        RADIO * 2 - 10, RADIO * 2 - 10
+                );
+            }
 
-            if (estado.isInicial()) dibujarFlechaInicial(g2, estado);
+            if (estado.isInicial())
+                dibujarFlechaInicial(g2, estado);
+
+            g2.setColor(new Color(55, 48, 65));
 
             String nombre = estado.getNombre();
             FontMetrics fm = g2.getFontMetrics();
@@ -203,20 +291,22 @@ public class PanelAFND extends JPanel {
         int x = estado.getX() - RADIO - 45;
         int y = estado.getY();
 
+        g2.setColor(MORADO);
         g2.drawLine(x, y, estado.getX() - RADIO, y);
         g2.drawLine(x + 8, y - 5, x, y);
         g2.drawLine(x + 8, y + 5, x, y);
     }
 
     private void dibujarTransiciones(Graphics2D g2) {
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.DARK_GRAY);
 
         for (Transicion t : controlador.getAFND().getTransiciones())
             dibujarTransicion(g2, t);
     }
 
     private void dibujarTransicion(Graphics2D g2, Transicion t) {
-        Estado origen = t.getOrigen(), destino = t.getDestino();
+        Estado origen = t.getOrigen();
+        Estado destino = t.getDestino();
 
         if (origen == null || destino == null) return;
 
@@ -258,12 +348,13 @@ public class PanelAFND extends JPanel {
         for (double v : new double[]{0.8, -0.8}) {
             int x = (int) (x2 + 10 * Math.cos(angulo + Math.PI * v));
             int y = (int) (y2 + 10 * Math.sin(angulo + Math.PI * v));
-
             g2.drawLine(x2, y2, x, y);
         }
     }
 
-    private void dibujarBucle(Graphics2D g2, Estado estado, char simbolo) {
+    private void dibujarBucle(
+            Graphics2D g2, Estado estado, char simbolo) {
+
         int x = estado.getX(), y = estado.getY();
         int diametro = 45;
 
@@ -286,7 +377,7 @@ public class PanelAFND extends JPanel {
     private void dibujarLineaTemporal(Graphics2D g2) {
         if (!modoTransicion || estadoOrigenTransicion == null) return;
 
-        g2.setColor(new Color(106, 76, 147));
+        g2.setColor(MORADO);
         g2.setStroke(new BasicStroke(
                 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                 1, new float[]{5, 5}, 0
@@ -317,5 +408,54 @@ public class PanelAFND extends JPanel {
         }
 
         return null;
+    }
+
+    private Transicion buscarTransicion(int x, int y) {
+        for (Transicion t : controlador.getAFND().getTransiciones()) {
+            Estado origen = t.getOrigen();
+            Estado destino = t.getDestino();
+
+            if (origen.equals(destino)) {
+                int bx = origen.getX();
+                int by = origen.getY() - RADIO - 13;
+
+                if (Math.hypot(x - bx, y - by) < 35)
+                    return t;
+
+                continue;
+            }
+
+            double distancia = distanciaPuntoLinea(
+                    x, y,
+                    origen.getX(), origen.getY(),
+                    destino.getX(), destino.getY()
+            );
+
+            if (distancia < 8)
+                return t;
+        }
+
+        return null;
+    }
+
+    private double distanciaPuntoLinea(
+            double px, double py,
+            double x1, double y1,
+            double x2, double y2) {
+
+        double dx = x2 - x1, dy = y2 - y1;
+
+        if (dx == 0 && dy == 0)
+            return Math.hypot(px - x1, py - y1);
+
+        double t = ((px - x1) * dx + (py - y1) * dy)
+                / (dx * dx + dy * dy);
+
+        t = Math.max(0, Math.min(1, t));
+
+        double cx = x1 + t * dx;
+        double cy = y1 + t * dy;
+
+        return Math.hypot(px - cx, py - cy);
     }
 }

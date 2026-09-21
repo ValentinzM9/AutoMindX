@@ -10,6 +10,7 @@ com\automindx\vista\PanelAFND.class
 com\automindx\modelo\Validador.class
 com\automindx\vista\PanelAFND$1.class
 com\automindx\vista\PanelControles$1.class
+com\automindx\vista\PanelConversion$1.class
 com\automindx\modelo\Estado.class
 com\automindx\modelo\ConversorAFNDAFD.class
 com\automindx\vista\PanelControlesAFND.class
