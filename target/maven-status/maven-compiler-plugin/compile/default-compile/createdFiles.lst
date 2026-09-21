@@ -5,12 +5,14 @@ com\automindx\controlador\ControladorNoDeterminista.class
 com\automindx\modelo\ConversorAFNDAFD$PasoConversion.class
 com\automindx\modelo\Automata.class
 com\automindx\modelo\AutomataNoDeterminista.class
+com\automindx\vista\PanelConversion.class
 com\automindx\vista\PanelAFND.class
 com\automindx\modelo\Validador.class
 com\automindx\vista\PanelAFND$1.class
 com\automindx\vista\PanelControles$1.class
 com\automindx\modelo\Estado.class
 com\automindx\modelo\ConversorAFNDAFD.class
+com\automindx\vista\PanelControlesAFND.class
 com\automindx\Main.class
 com\automindx\modelo\ConversorAFNDAFD$ResultadoConversion.class
 com\automindx\vista\PanelAutomata.class
