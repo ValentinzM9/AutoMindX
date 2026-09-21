@@ -1,4 +1,5 @@
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\controlador\ControladorAutomata.java
+C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\controlador\ControladorNoDeterminista.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\Main.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\modelo\Automata.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\modelo\AutomataNoDeterminista.java
@@ -6,6 +7,7 @@ C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\s
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\modelo\Estado.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\modelo\Transicion.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\modelo\Validador.java
+C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\vista\PanelAFND.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\vista\PanelAutomata.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\vista\PanelControles.java
 C:\Users\usuario\Downloads\Semestre 2026-2\Compiladores\Corte 1 - C1\AutoMindX\src\main\java\com\automindx\vista\VentanaPrincipal.java
